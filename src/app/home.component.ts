@@ -1,5 +1,6 @@
 import { Component} from "@angular/core";
-import { HttpClient, HttpClientModule} from "@angular/common/http";
+import { HttpClient, HttpHeaders, HttpClientModule} from "@angular/common/http";
+import { CommonModule } from '@angular/common';
 
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from "@angular/router";
@@ -14,7 +15,7 @@ import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } 
     templateUrl: './home.component.html',
     styleUrls: ['./home.component.scss'],
     standalone: true,
-    imports: [FormsModule,HttpClientModule],
+    imports: [FormsModule,HttpClientModule,CommonModule],
 })
 
 
@@ -34,6 +35,8 @@ export class HomeComponent {
     logina: '',
     passworda: ''
   }
+
+  groups: Array<{id: number; name: string; } > = [];
 
 
   isreg = 0;
@@ -55,6 +58,35 @@ export class HomeComponent {
 
         // this.html_form = 0;
         // this.ProfName =  "Пользователь: <b>" + String(user.email) + "</b>";
+
+
+
+        http.get('https://rieltorov.net/tmp/office_api.php?api=groups', {}).subscribe(  data => {
+
+
+
+
+        (Object.keys(data)).forEach((key, index) => {
+
+          this.groups.push({
+            id: Object.values(data)[index]["id"],
+            name: Object.values(data)[index]["name"]
+          });
+        });
+
+
+
+ //console.log(this.groups);
+
+
+
+
+
+
+
+        });
+
+
         }
         else
         {
