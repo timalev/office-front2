@@ -89,7 +89,7 @@ drop(event: CdkDragDrop<any[]>){
 
  // this.tables.find(item => item.name == itemUpdated.name).visibility = itemUpdated.visibility;
   
-  let coords = this.getindex(0,1);
+  let coords = this.getindex(0,0);
   
   this.tables[coords].visibility =  'visible';
   this.tables[coords].name =  'Группа 2';

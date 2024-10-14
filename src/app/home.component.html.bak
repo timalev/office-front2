@@ -15,7 +15,7 @@
 <div cdkDropList cdkDropListOrientation="mixed" class="example-list" (cdkDropListDropped)="drop($event)">
   @for (item of tables; track item) {
 
-    <div class="example-box" style="visibility:{{item.visibility}};" cdkDrag [cdkDragFreeDragPosition]="dragPosition" [cdkDragDisabled]="disablestatus">{{item.name}}
+    <div class="example-box" style="visibility:{{item.visibility}};" cdkDrag [cdkDragFreeDragPosition]="dragPosition" [cdkDragDisabled]="{{disablestatus}}">{{item.name}}
 	<div><a href="#" (click)="deltab(item)" style="text-decoration: none;" *ngIf="item.visibility=='visible'" >x</a></div></div>
 	
   }

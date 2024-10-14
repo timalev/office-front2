@@ -37,7 +37,7 @@ if(isset($post['json']))
 			case "users":
 				$users = array();
 			    $sql_q = "SELECT * FROM of_users ORDER BY id ASC";
-		        if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
+		        if (!$sql_res = mysqli_query($conn,$sql_q)) print "ERR: ";
 				
 				while ($rows = mysqli_fetch_array($sql_res))
 					$users[] = '{"id":'.$rows["id"].',"name": "'.$rows["_users"].'","group": '.$rows["_groups"].'}';
@@ -47,7 +47,7 @@ if(isset($post['json']))
 
 			case "tables":
 				$sql_q = "SELECT * FROM of_tables WHERE id=1";
-		        if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
+		        if (!$sql_res = mysqli_query($conn,$sql_q)) print "ERR: ";
 				$rows = mysqli_fetch_array($sql_res);
 				echo $rows["_tables"];
 			break;
@@ -55,7 +55,7 @@ if(isset($post['json']))
 			default:
 				$groups = array();
 			    $sql_q = "SELECT * FROM of_groups ORDER BY id ASC";
-		        if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
+		        if (!$sql_res = mysqli_query($conn,$sql_q)) print "ERR: ";
 				
 				while ($rows = mysqli_fetch_array($sql_res))
 					$groups[] = '{"id":'.$rows["id"].',"name": "'.$rows["_groups"].'"}';
