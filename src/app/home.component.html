@@ -1,54 +1,50 @@
-<div [class.hide]="isreg==0">
+<h2>Создать рабочее место/переговорную</h2>
 
-<input type="button"  (click)="SignOut()" value="Выйти">
+
+
+
+
+<input type="radio" id="rab" name="tabtype" value="rm" [(ngModel)]="tablesForm.tabtype" />
+    <label for="sorudnik">Рабочее место</label>
+
+&nbsp;&nbsp;
+
+    <input type="radio" id="per" name="tabtype" value="pe" [(ngModel)]="tablesForm.tabtype" />
+    <label for="admin">Переговорная</label>
+
 <br/><br/>
 
-</div>
-
-<!--
-<div cdkDropList [cdkDropListData]="blocks" (cdkDropListDropped)="drop($event)">
- <div *ngFor="let block of blocks" cdkDrag [ngStyle]="{'position': 'absolute', 'top.px': block.y, 'left.px': block.x}">{{block.name}}</div>
-</div>
--->
+Название/№:&nbsp;
+<input id="rabpernme" type="text" [(ngModel)]="tablesForm.rabpernme" /> <br/><br/>
 
 
-<div cdkDropList cdkDropListOrientation="mixed" class="example-list" (cdkDropListDropped)="drop($event)">
-  @for (item of tables; track item) {
+Координаты:&nbsp;
+<input id="x" type="text" size=3 [(ngModel)]="tablesForm.x" /> :x &nbsp;&nbsp;<input id="y" type="text" size=3 [(ngModel)]="tablesForm.y"/> :y
 
-    <div class="example-box" style="visibility:{{item.visibility}};" cdkDrag [cdkDragFreeDragPosition]="dragPosition" [cdkDragDisabled]="disablestatus">{{item.name}}
-	<div><a href="#" (click)="deltab(item)" style="text-decoration: none;" *ngIf="item.visibility=='visible'" >x</a></div></div>
-	
-  }
-</div>
+<br/><br/>
+Количество мониторов: -
+
+   <input id="mon" type="text" size=3 [(ngModel)]="tablesForm.mon"/> <br/><br/>
+
+Офис -
+<select [(ngModel)]="tablesForm.office">
+    <option *ngFor="let office of offices" [ngValue]="office.id">{{office.name}}</option>
+</select>
+<br/><br/>
 
 
-<p>
-  <button (click)="changePosition()">Change element position</button>
-</p>
+  <input type="button" value="Создать" (click)="addtable()"><br/><br/>
 
 
-<table border=0 width=300px cellpadding=20>
-<tr>
-	<td><div class="example-box" cdkDrag [cdkDragFreeDragPosition]="dragPosition">
-  1
-</div></td>
-	<td><div class="example-box" cdkDrag [cdkDragFreeDragPosition]="dragPosition2">
-  2
-</div></td>
-</tr>
-<tr>
-	<td><div class="example-box" cdkDrag [cdkDragFreeDragPosition]="dragPosition3">
- 3</div></td>
-	<td><div class="example-box" cdkDrag [cdkDragFreeDragPosition]="dragPosition4">
-  4</div></td>
-</tr>
-<tr>
-	<td><div class="example-box" cdkDrag [cdkDragFreeDragPosition]="dragPosition5">
-  5</div></td>
-	<td><div class="example-box" cdkDrag [cdkDragFreeDragPosition]="dragPosition6">
- 6</div></td>
-</tr>
-</table>
+
+
+
+        <div cdkDrag class="example-box" *ngFor="let c of tables; index as i"
+             [cdkDragFreeDragPosition]="c.position"
+             (cdkDragEnded)="dragEnded_new($event,i)" >
+            {{c.name}}
+            <div><a href="#" (click)="deltab(i)" style="text-decoration: none;">x</a></div>
+        </div>
 
 
 
@@ -56,61 +52,20 @@
 
 
 
-<h4>Список групп</h4>
-<table>
-      <tr *ngFor="let group of groups">
-          <td>{{group.id}}</td>
-          <td>{{group.name}}</td>
-
-      </tr>
-</table>
 
 
 
-<h4>Список пользователей</h4>
-<table border=1>
-       <tr>
-          <td>№</td>
-          <td>Пользователи</td>
-		  <td>Группы</td>
 
-      </tr>
-      <tr *ngFor="let user of users">
-          <td>{{user.id}}</td>
-          <td>{{user.name}}</td>
-		  <td>{{user.group}}</td>
 
-      </tr>
-</table>
+
+
+
 
 
 
 
 
 <div [class.hide]="isreg==1">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

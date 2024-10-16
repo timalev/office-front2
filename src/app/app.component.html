@@ -1,4 +1,36 @@
+<div class="topnav">
+<table border=0 width=100%>
+<tr>
+<td>
+
+
+  <a class="active" href="/">Главная</a>
+  <a href="/wokers">Сотрудники и группы</a>
+  <a href="/scheme">Карта офиса</a>
+  <a href="/workload">Загруженности офиса</a>
+
+
+</td>
+<td align=right>
+
+
+<input type="button" [class.hide]="isreg==0" (click)="SignOut()" value="Выйти">&nbsp;&nbsp;
+
+</td>
+</tr>
+</table>
+
+</div>
+
+
+
 <div>
+
+
                    <!-- <h1>Приложение Angular</h1>-->
                     <router-outlet></router-outlet>
                </div>
+               <br/><br/>
+<div class="footer">
+ Бронирование офисов 2024
+</div>

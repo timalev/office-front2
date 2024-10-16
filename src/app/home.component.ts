@@ -8,11 +8,7 @@ import { getAuth,createUserWithEmailAndPassword, signInWithEmailAndPassword, onA
 import { getDatabase, ref, set, update } from "firebase/database";
 import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-//import {CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
-
-//import {DragDropModule} from '@angular/cdk/drag-drop';
-
-import {CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+import {CdkDragDrop, CdkDragEnd, CdkDrag, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 
 @Component({
     selector: "home-app",
@@ -25,102 +21,67 @@ import {CdkDragDrop, CdkDrag, CdkDropList, moveItemInArray} from '@angular/cdk/d
 
 export class HomeComponent {
 
-
-	 groups: Array<{id: number; name: string; } > = [];
-	 users: Array<{id: number; name: string; group: string; } > = [];
-	 //tables:  String[] = [];
-
-	 tables:   Array<{name: string; visibility: string; } > = [];
-
-	 disablestatus: boolean = false;
+   offices: Array<{id: number; name: string; } > = [];
 
 
-	 blocks = [
-		 { name: 'Block 1', x: 50, y: 100 },
-		 { name: 'Block 2', x: 650, y: 200 },
-		 { name: 'Block 3', x: 250, y: 100 },
-		 { name: 'Block 4', x: 350, y: 100 }
-	 ];
+	 tables:   Array<{name: string; visibility: string; mon: number; type: string; position: {x: number, y: number}; office: string} > = [];
+
+	 //disablestatus: boolean = false;
 
 
-/*
-drop(event: CdkDragDrop<any[]>){
 
-	const prevIndex = this.blocks.findIndex((d) => d === event.item.data);
-	moveItemInArray(this.blocks, prevIndex,event.currentIndex);
-	//this.updateCoordinates();
-}
+ addtable() {
 
 
-[
-
-{"name": "Two","display": "block"},
-{"name":"Eight","display": "block"},
-{"name":"Four","display": "block"},
-{"name":"One","display": "block"},
-{"name":"Seven","display": "block"},
-{"name":"Zero","display": "block"},
-{"name":"Three","display": "block"},
-{"name":"Six","display": "block"}
+   	this.tables.push({
+					name: this.tablesForm.rabpernme,
+					visibility: 'visible',
+          mon: Number(this.tablesForm.mon),
+          type: this.tablesForm.tabtype,
+          position: {x: Number(this.tablesForm.x), y:Number(this.tablesForm.y)},
+          office: this.tablesForm.office,
+				});
 
 
-]
-
-*/
-
-	  dragPosition = {x: 0, y: 0};
-
-	  dragPosition2 = {x: 0, y: 0};
-
-	  dragPosition3 = {x: 0, y: 0};
-
-	  dragPosition4 = {x: 0, y: 0};
-
-	  dragPosition5 = {x: 0, y: 0};
-
-	  dragPosition6 = {x: 0, y: 0};
-
-
- changePosition() {
-  //  this.dragPosition = {x: this.dragPosition.x + 50, y: this.dragPosition.y + 50};
-
-
-  let itemUpdated = {name:'Two', visibility:'visible'};
-
- // this.tables.find(item => item.name == itemUpdated.name).visibility = itemUpdated.visibility;
-  
-  let coords = this.getindex(0,1);
-  
-  this.tables[coords].visibility =  'visible';
-  this.tables[coords].name =  'Группа 2';
-
-
-  	let disc = this.tables.filter(item => item.visibility === 'hidden').length;
-
-	console.log(disc);
-
-		
-		if (disc==0)
-		{
-			this.disablestatus = false;
-		}
-
-
-  this.updateTables();
-
-	
+    //console.log(this.tables);
   }
 
 
 
-	// items = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+	dragEnded_new(event: CdkDragEnd<string[]>,i: number)
+  {
+    //console.log(event.distance.x);
 
+    //console.log(this.newposition(this.tables[i].position.x,event.distance.x,this.tables[i].position.y,event.distance.y));
+
+
+   this.tables[i].position = this.newposition(this.tables[i].position.x,event.distance.x,this.tables[i].position.y,event.distance.y);
+
+   this.updateTables();
+
+  }
+
+newposition(x: number, x2: number, y: number, y2: number)
+{
+    let new_x = x + x2;
+    let new_y = y + y2;
+
+    return {"x":new_x,"y":new_y};
+
+    //console.log(x2 + "," + y2 + " / " + new_x +  "," + new_y);
+}
+
+dragEnd(event: CdkDragEnd<string[]>) {
+
+  console.log("pidr");
+    //console.log($event.source.getFreeDragPosition());
+}
 
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.tables, event.previousIndex, event.currentIndex);
 
 
-	//console.log('item moved from index ' + event.previousIndex + ' to index ' + event.currentIndex);
+	console.log('item moved from index ' + event.previousIndex + ' to index ' + event.currentIndex);
 
 	//console.log(this.tables);
 
@@ -132,15 +93,22 @@ drop(event: CdkDragDrop<any[]>){
 	const body = {json: tables_json};
 
 	this.http.post("https://rieltorov.net/tmp/office_api.php", body).subscribe(  data => {
-		
+
 //console.log(data);
 
-	}); 
+	});
 
   }
 
 
-
+ tablesForm:
+  any = {
+    x: 0,
+    y: 0,
+    mon: 0,
+    tabtype: '',
+    rabpernme: ''
+  }
 
   loginForm:
   any = {
@@ -170,20 +138,19 @@ drop(event: CdkDragDrop<any[]>){
 
 
 
-	  console.log(this.dropDisable());
+	  //console.log(this.dropDisable());
 
 
     const auth = getAuth();
 
     onAuthStateChanged(auth, (user) => {
-		
+
 		if (user) {
 			const uid = user.uid;
 			console.log(user.email);
 			this.isreg = 1;
-			
-			this.groupslist();
-		    this.userslist();
+
+      this.officeslist();
 			this.tableslist();
 		}
         else
@@ -202,28 +169,18 @@ drop(event: CdkDragDrop<any[]>){
 
 dropDisable(): number {
 
-	
+
 	return this.tables.filter(item => item.visibility === 'visible').length;
 }
 
 
-getindex(y: number, x: number)
-	{
 
-	  let p = x;
-	  
-	  if (y==1) p = 4 + x;
-	  
-	 
-	  return p;
-
-	}
 
 updateTables()
 	{
 
 
-	
+
 	   	var tables_json = JSON.stringify(this.tables);
 
 	//console.log(tables_json);
@@ -234,55 +191,39 @@ updateTables()
 	this.http.post("https://rieltorov.net/tmp/office_api.php", body).subscribe(  data => {
 
 
-	
-		
+
+
 //console.log(data);
 
-	}); 
+	});
 	}
 
-groupslist()
-	{
-	  let params = new HttpParams()
-			.set('type','groups');
-		
+
+
+officeslist()
+{
+   let params = new HttpParams()
+			.set('type','offices');
+
         this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
 			(Object.keys(data)).forEach((key, index) => {
-				this.groups.push({
+				this.offices.push({
 					id: Object.values(data)[index]["id"],
 					name: Object.values(data)[index]["name"]
 					});
 				});
 			});
-	}
+}
 
-userslist()
+
+deltab(i:number)
 	{
-		let params = new HttpParams()
-			.set('type','users');
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+    this.tables.splice(i, 1);
 
 
-			(Object.keys(data)).forEach((key, index) => {
-				this.users.push({
-					id: Object.values(data)[index]["id"],
-					name: Object.values(data)[index]["name"],
-					group: Object.values(data)[index]["group"]	
-					});
-				});
+   // c.visibility = "hidden";
 
-
-			});
-
-
-	}
-
-deltab(item: {name: string; visibility: string})
-	{
-	//console.log(item.visibility);
-	item.visibility = "hidden";
-	
 	//console.log(this.tables);
 
 	var tables_json = JSON.stringify(this.tables);
@@ -292,11 +233,8 @@ deltab(item: {name: string; visibility: string})
 	this.http.post("https://rieltorov.net/tmp/office_api.php", body).subscribe(  data => {
 
 
-		this.disablestatus = true;
-		
-//console.log(data);
 
-	}); 
+	});
 
 
 
@@ -309,7 +247,7 @@ tableslist()
 
 		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
 
-			
+
 
 //console.log(data);
 
@@ -318,11 +256,15 @@ tableslist()
 				//console.log(Object.values(data));
 
 				//console.log(Object.values(data)[index]["name"]);
-				
-				
+
+
 				this.tables.push({
 					name: Object.values(data)[index]["name"],
-					visibility: Object.values(data)[index]["visibility"]
+					visibility: Object.values(data)[index]["visibility"],
+          mon: Object.values(data)[index]["mon"],
+          type: Object.values(data)[index]["type"],
+          position: {x: Object.values(data)[index]["position"]["x"], y:Object.values(data)[index]["position"]["y"]},
+          office: Object.values(data)[index]["office"]
 				});
 
 
@@ -330,18 +272,18 @@ tableslist()
 
 
 
-
-        //  console.log(this.tables);
+/*
+        // console.log(this.tables[0].position);
 
 		let disc = this.tables.filter(item => item.visibility === 'hidden').length;
-		
+
 		if (disc!=0)
 		{
 			this.disablestatus = true;
 		}
 		//console.log(disc);
 
-
+*/
 
 
 

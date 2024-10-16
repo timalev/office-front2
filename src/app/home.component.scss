@@ -16,7 +16,7 @@
   display: flex;
   flex-wrap: wrap;
   width: 505px;
- 
+
   gap: 15px;
   padding: 15px;
   border: solid 1px #ccc;
@@ -37,6 +37,7 @@
   text-align: center;
   font-size: 14px;
   min-width: 115px;
+  position: absolute;
 }
 
 .cdk-drag-preview {

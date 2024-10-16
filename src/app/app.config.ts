@@ -6,13 +6,13 @@ import { provideClientHydration } from '@angular/platform-browser';
 
 
 import {HomeComponent} from "./home.component";
-import {AboutComponent} from "./about.component";
+import {WokersComponent} from "./wokers.component";
 import {NotFoundComponent} from "./not-found.component";
 
 
 const appRoutes: Routes =[
     { path: "", component: HomeComponent},
-    { path: "about", component: AboutComponent},
+    { path: "wokers", component: WokersComponent},
     { path: "**", component: NotFoundComponent }
 ];
 
