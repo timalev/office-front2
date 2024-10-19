@@ -36,15 +36,32 @@
 
  @if (choffice()) {
   
-      Прикреплен к офису: <em>{{choffice()}}</em>
+      Прикреплен к офису: <em>{{choffice()}}</em><br/>
    
   }
 
    @if (chgroup()) {
   
-      Прикреплен к группе: <em>{{chgroup()}}</em>
+      Прикреплен к группе: <em>{{chgroup()}}</em><br/>
    
   }
+
+
+
+<h4>Создать группу</h4>
+
+ Название группы:&nbsp;
+     <input id="grname" type="text" [(ngModel)]="groupForm.grname" /> <br/><br/>
+
+<!--
+     Офис -
+     <select [(ngModel)]="tablesForm.office">
+      <option *ngFor="let office of offices" [ngValue]="office.id">{{office.name}}</option>
+     </select>
+    -->
+
+
+     <input type="button" value="Создать группу" (click)="addgroup()"><br/><br/>
 
 
 <h4>Список групп</h4>
@@ -55,7 +72,7 @@
           <td>{{group.id}}</td>
           <td>{{group.name}}</td>
 		  <td> <button mat-raised-button (click)="openDialog('office')">Прикрепить к офису</button> </td>
-
+           <td> &nbsp;<a style="text-decoration: none;" href=# (click)="delGroup('group'); "><font color=red>x</font></a> &nbsp;</td>
 
       </tr>
 </table>

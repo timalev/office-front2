@@ -43,7 +43,12 @@ if(isset($post['office_name']))
     if (!$sql_res = mysqli_query($conn,$sql_q)) echo "[\"err\"]";
 	else echo "[\"ok\"]";
 }
-
+if(isset($post['group_name']))
+{
+	$sql_q = "INSERT INTO of_groups (_groups) VALUES ('".trim($post['group_name'])."')";
+    if (!$sql_res = mysqli_query($conn,$sql_q)) echo "[\"err\"]";
+	else echo "[\"".mysqli_insert_id($conn)."\"]";
+}
 
 	if (isset($_GET["type"])) {
 
@@ -73,6 +78,12 @@ if(isset($post['office_name']))
 				//echo '{"'.$rows["_status"].'"}';
                 echo '{"status": "'.$rows["_status"].'"}';
 				
+			break;
+
+			case "delgroup":
+				$sql_q = "DELETE FROM of_groups WHERE id='".$_GET["id"]."'";
+			    if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
+				else echo "[\"ok\"]";
 			break;
 
 			default:
