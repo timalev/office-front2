@@ -1,4 +1,5 @@
 <?php
+error_reporting(E_ALL);
 header ('Access-Control-Allow-Origin:*');
 header ('Access-Control-Allow-Credentials:true');
 header ('Access-Control-Allow-Methods:*');
@@ -30,6 +31,19 @@ if(isset($post['json']))
      if (!$sql_res = mysqli_query($conn,$sql_q)) echo "[\"err\"]";
 	 else echo "[\"ok\"]";
 }
+if(isset($post['user']) && isset($post['login']) && isset($post['status']))
+{
+	$sql_q = "INSERT INTO of_users (_users,_emails,_status) VALUES ('".$post['user']."','".$post['login']."','".$post['status']."')";
+    if (!$sql_res = mysqli_query($conn,$sql_q)) echo "[\"err\"]";
+	else echo "[\"ok\"]";
+}
+if(isset($post['office_name']))
+{
+	$sql_q = "INSERT INTO of_offices (_names) VALUES ('".$post['office_name']."')";
+    if (!$sql_res = mysqli_query($conn,$sql_q)) echo "[\"err\"]";
+	else echo "[\"ok\"]";
+}
+
 
 	if (isset($_GET["type"])) {
 
@@ -50,6 +64,15 @@ if(isset($post['json']))
 		        if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
 				$rows = mysqli_fetch_array($sql_res);
 				echo $rows["_tables"];
+			break;
+
+			case "status":
+			    $sql_q = "SELECT * FROM of_users WHERE _emails='".$_GET["user"]."'";
+		        if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
+				$rows = mysqli_fetch_array($sql_res);
+				//echo '{"'.$rows["_status"].'"}';
+                echo '{"status": "'.$rows["_status"].'"}';
+				
 			break;
 
 			default:

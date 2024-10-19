@@ -14,7 +14,7 @@
 <td align=right>
 
 <div  [class.hide]="isreg==0">
-<font color=white>Ваш статус: <b>{{status}}</b></font> &nbsp;&nbsp;
+<font color=white size=1>Ваш статус: <b>{{status}}</b></font> &nbsp;&nbsp;
 <input type="button" (click)="SignOut()" value="Выйти">&nbsp;&nbsp;
 </div>
 

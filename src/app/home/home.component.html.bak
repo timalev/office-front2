@@ -1,0 +1,56 @@
+<h1>Авторизация/регистрация</h1>
+
+
+
+
+<div [class.hide]="doauth==1">
+
+
+
+<h2>Регистрация</h2>
+
+
+
+  <input id="user" type="text" [(ngModel)]="loginForm.user"  /> - Имя <br/><br/>
+  <input id="login" type="text" [(ngModel)]="loginForm.login"  /> - Логин <br/><br/>
+  <input id="passw" type="text" [(ngModel)]="loginForm.password" /> - Пароль<br/><br/>
+  <input id="passw2" type="text" [(ngModel)]="loginForm.password2" /> - Повторите пароль
+
+  <br/><br/>
+
+
+    <input type="radio" id="sorudnik" name="type" value="s" [(ngModel)]="loginForm.type" checked />
+    <label for="sorudnik">Сотрудник</label>
+
+
+
+    <input type="radio" id="admin" name="type" value="админ" [(ngModel)]="loginForm.type" />
+    <label for="admin">Админ</label>
+
+ <br/><br/>
+
+  <input type="button" value="Зарегистрироваться" (click)="reg()">
+
+</div>
+
+<div [class.hide]="isreg==1 || doauth==0">
+
+<h2>Авторизация</h2>
+
+
+
+
+  <input id="logina" type="text" [(ngModel)]="loginForma.logina"  /> - Логин <br/><br/>
+  <input id="passwa" type="text" [(ngModel)]="loginForma.passworda" /> - Пароль
+
+  <br/><br/>
+
+
+  <input type="button" value="Войти" (click)="SignIn()">
+
+   <div  [class.hide]="doauth==0"><br><a href=# (click)="doauth=0">Регистрация</a></div>
+  </div>
+  
+
+
+<div [class.hide]="isreg==0">Вы авторизованы</div>

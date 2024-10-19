@@ -1,0 +1,112 @@
+<h1>Сотрудники и группы</h1>
+
+
+
+
+<div [class.hide]="isreg==0 || status=='сотрудник' || status==''">
+
+
+
+
+  
+
+ 
+
+
+
+
+
+
+
+
+<h4>Создать офис</h4>
+
+ Название:&nbsp;
+     <input id="oname" type="text" [(ngModel)]="officeForm.oname" /> <br/><br/>
+
+<!--
+     Офис -
+     <select [(ngModel)]="tablesForm.office">
+      <option *ngFor="let office of offices" [ngValue]="office.id">{{office.name}}</option>
+     </select>
+    -->
+
+
+     <input type="button" value="Создать офис" (click)="addoffice()"><br/><br/>
+
+ @if (choffice()) {
+  
+      Прикреплен к офису: <em>{{choffice()}}</em><br/>
+   
+  }
+
+   @if (chgroup()) {
+  
+      Прикреплен к группе: <em>{{chgroup()}}</em><br/>
+   
+  }
+
+
+<h4>Список групп</h4>
+<table border=1 cellpadding=5>
+      
+
+      <tr *ngFor="let group of groups">
+          <td>{{group.id}}</td>
+          <td>{{group.name}}</td>
+		  <td> <button mat-raised-button (click)="openDialog('office')">Прикрепить к офису</button> </td>
+
+
+      </tr>
+</table>
+
+
+
+<h4>Список пользователей</h4>
+<table border=1 cellpadding=5>
+       <tr>
+          <td>№</td>
+          <td>Пользователи</td>
+		  <td>Группы</td>
+		   <td> </td>
+
+
+      </tr>
+      <tr *ngFor="let user of users">
+          <td>{{user.id}}</td>
+          <td>{{user.name}}</td>
+		  <td>{{user.group}}</td>
+		  <td> <button mat-raised-button (click)="openDialog('group')">Прикрепить к группе</button> </td>
+
+      </tr>
+</table>
+
+</div>
+<div [class.hide]="isreg==1">
+<p>Для просмотра данного раздела необходимо <a href="/">авторизоваться</a></p>
+</div>
+
+<div [class.hide]="status=='админ' || status==''">
+<p>Данная страница доступна только для админов</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

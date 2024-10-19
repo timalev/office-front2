@@ -1,0 +1,56 @@
+<h1>Рабочие места и переговорные</h1>
+
+
+<div [class.hide]="isreg==0">
+
+<div class='hid' [class.vis]="status=='админ'"> 
+
+
+     <input type="radio" id="rab" name="tabtype" value="rm" [(ngModel)]="tablesForm.tabtype" />
+     <label for="sorudnik">Рабочее место</label>
+
+     &nbsp;&nbsp;
+
+     <input type="radio" id="per" name="tabtype" value="pe" [(ngModel)]="tablesForm.tabtype" />
+     <label for="admin">Переговорная</label>
+
+     <br/><br/>
+
+     Название/№:&nbsp;
+     <input id="rabpernme" type="text" [(ngModel)]="tablesForm.rabpernme" /> <br/><br/>
+
+     Координаты:&nbsp;
+     <input id="x" type="text" size=3 [(ngModel)]="tablesForm.x" /> :x &nbsp;&nbsp;<input id="y" type="text" size=3 [(ngModel)]="tablesForm.y"/> :y
+
+     <br/><br/>
+     Количество мониторов: -
+
+     <input id="mon" type="text" size=3 [(ngModel)]="tablesForm.mon"/> <br/><br/>
+
+     Офис -
+     <select [(ngModel)]="tablesForm.office">
+      <option *ngFor="let office of offices" [ngValue]="office.id">{{office.name}}</option>
+     </select>
+     <br/><br/>
+
+     <input type="button" value="Создать" (click)="addtable()"><br/><br/>
+</div>
+
+
+
+        <div cdkDrag class="example-box" *ngFor="let c of tables; index as i"
+             [cdkDragFreeDragPosition]="c.position"
+             (cdkDragEnded)="dragEnded_new($event,i)"
+			 [cdkDragDisabled]="status=='админ' ? false : true"
+			 >
+            {{c.name}}
+            <div class='hid' [class.vis]="status=='админ'"><a href="#" (click)="deltab(i)" style="text-decoration: none;">x</a></div>
+			<div  class='hid'[class.vis]="status=='сотрудник'" > <input type="button" value="Забронировать" (click)="book()"></div>
+
+        </div>
+</div>
+<div [class.hide]="isreg==1">
+<p>Для просмотра данного раздела необходимо <a href="/">авторизоваться</a></p>
+</div>
+
+

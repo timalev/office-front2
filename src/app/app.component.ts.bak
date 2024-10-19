@@ -109,10 +109,21 @@ ngOnInit() {
 
 
 			(Object.keys(data)).forEach((key, index) => {
-				this.status=Object.values(data)[0];			
-				
+
+				this.status=Object.values(data)[0];
+		
+			
+				this.status_get.push({
+					status: Object.values(data)[index]["status"]
+					});
 				});
 				
+
+
+
+			//this.status=data.status;
+              
+			  console.log(this.status_get);
 
 			});
 
