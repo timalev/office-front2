@@ -50,6 +50,17 @@ if(isset($post['group_name']))
 	else echo "[\"".mysqli_insert_id($conn)."\"]";
 }
 
+if(isset($post['book_name']) && isset($post['book_date']))
+{
+	$date = explode(".",$post['book_date']);
+
+	$sql_q = "INSERT INTO of_booking (_name,_date) VALUES ('".$post['book_name']."','".$date[2]."-".$date[1]."-".$date[0]."')";
+    if (!$sql_res = mysqli_query($conn,$sql_q)) echo "[\"err\"]";
+	else echo "[\"".mysqli_insert_id($conn)."\"]";
+}
+
+
+
 	if (isset($_GET["type"])) {
 
 		switch ($_GET["type"]) {

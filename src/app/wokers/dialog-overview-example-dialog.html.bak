@@ -28,7 +28,7 @@
     <mat-form-field [class.cdk-visually-hidden]="type2=='office'">
     <mat-label>Группа</mat-label>
   
-	 <select matNativeControl [(ngModel)]="chgroup" name="group">
+	 <select matNativeControl [(ngModel)]="chgroup" name="group" (dateChange)="onDate($event)">
       <option value="" selected>Выбор</option>
        @for (group of arrayGroups; track group) {
         <option [value]="group.id">&nbsp;{{group.name}}</option>
@@ -43,5 +43,5 @@
 <mat-dialog-actions>
   <button mat-button (click)="onNoClick()">Отмена</button>
  <button [hidden]="type2=='group'"  mat-button [mat-dialog-close]="choffice()" cdkFocusInitial >Прикрепить к офису</button>
-  <div [hidden]="type2=='office'" ><button mat-button [mat-dialog-close]="chgroup()" cdkFocusInitial>Прикрепить к группе</button></div>
+<button  [hidden]="type2=='office'" mat-button [mat-dialog-close]="chgroup()" cdkFocusInitial>Прикрепить к группе</button>
 </mat-dialog-actions>

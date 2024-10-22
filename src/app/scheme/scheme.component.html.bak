@@ -1,12 +1,13 @@
 <h1>Рабочие места и переговорные</h1>
-<mbsc-datepicker
-    [controls]="['calendar']"
-    [min]="min"
-    [max]="max"
-    [labels]="singleLabels"
-    [invalid]="singleInvalid"
-    (onPageLoading)="onPageLoading($event)">
-</mbsc-datepicker>
+
+
+<!--
+ @if (picker()) {
+  
+      Дата бронирования: <em>{{picker()}}</em><br/>
+   
+  }
+-->
 
 <div [class.hide]="isreg==0">
 
@@ -45,14 +46,16 @@
 
 
 
-        <div cdkDrag class="example-box" *ngFor="let c of tables; index as i"
+        <div cdkDrag  *ngFor="let c of tables; index as i"
              [cdkDragFreeDragPosition]="c.position"
              (cdkDragEnded)="dragEnded_new($event,i)"
 			 [cdkDragDisabled]="status=='админ' ? false : true"
+			 [ngClass]="c.name == getbooking(curr_name) ? 'example-box' : 'example-box-booked'"
+			 
 			 >
             {{c.name}}
             <div class='hid' [class.vis]="status=='админ'"><a href="#" (click)="deltab(i)" style="text-decoration: none;">x</a></div>
-			<div  class='hid'[class.vis]="status=='сотрудник'" > <input type="button" value="Забронировать" (click)="book()"></div>
+			<div  class='hid'[class.vis]="status=='сотрудник'" > <input type="button" value="Забронировать" (click)="book(c.name)"></div>
 
         </div>
 </div>

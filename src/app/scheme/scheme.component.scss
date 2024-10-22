@@ -44,7 +44,22 @@ visibility: visible;
   display: inline-block;
   box-sizing: border-box;
   cursor: move;
-  background: white;
+  background: #603737;
+  text-align: center;
+  font-size: 14px;
+  min-width: 115px;
+  position: absolute;
+}
+
+.example-box-booked {
+  padding: 20px 10px;
+  border: solid 1px #ccc;
+  border-radius: 4px;
+  color: rgba(0, 0, 0, 0.87);
+  display: inline-block;
+  box-sizing: border-box;
+  cursor: move;
+  background: #9d8484;
   text-align: center;
   font-size: 14px;
   min-width: 115px;

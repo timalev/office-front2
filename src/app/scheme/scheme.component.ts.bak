@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component} from "@angular/core";
+import { Directive, Component, inject, model, signal, importProvidersFrom,OnInit} from "@angular/core";
 import { HttpClient, HttpHeaders, HttpClientModule, HttpParams} from "@angular/common/http";
 import { CommonModule } from '@angular/common';
 
@@ -10,6 +10,33 @@ import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } 
 
 import {CdkDragDrop, CdkDragEnd, CdkDrag, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 
+import {MatSelectModule} from '@angular/material/select';
+import {MatButtonModule} from '@angular/material/button';
+import {
+  MAT_DIALOG_DATA,
+  MatDialog,
+  MatDialogActions,
+  MatDialogClose,
+  MatDialogContent,
+  MatDialogRef,
+  MatDialogTitle,
+} from '@angular/material/dialog';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+
+
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {provideNativeDateAdapter} from '@angular/material/core';
+
+
+
+
+export interface DialogData {
+  
+  name: string;
+  
+}
+
 
 
 @Component({
@@ -17,12 +44,17 @@ import {CdkDragDrop, CdkDragEnd, CdkDrag, CdkDropList, moveItemInArray} from '@a
     templateUrl: './scheme.component.html',
     styleUrls: ['./scheme.component.scss'],
     standalone: true,
-    imports: [FormsModule,HttpClientModule,CommonModule,CdkDropList, CdkDrag],
-	changeDetection: ChangeDetectionStrategy.OnPush,
+  
+
+    imports: [FormsModule,
+		HttpClientModule,
+		CommonModule,
+		CdkDropList, CdkDrag, MatFormFieldModule, MatInputModule,MatSelectModule, FormsModule, MatButtonModule],
+	
 })
 
 
-export class SchemeComponent {
+export class SchemeComponent implements OnInit {
 
    offices: Array<{id: number; name: string; } > = [];
    tables:   Array<{name: string; visibility: string; mon: number; type: string; position: {x: number, y: number}; office: string} > = [];
@@ -31,6 +63,52 @@ export class SchemeComponent {
    
    status = '';
    disdrag: boolean = true;
+
+   curr_name = '';
+
+   dialog = inject(MatDialog);
+
+
+
+ getbooking(date: string) {
+
+	 this.addresses =[];
+
+	 this.curr_name = date;
+/*
+this.tables.push({
+					name: 'yerterte',
+					visibility: "visible",
+					mon: 3,
+					type: "rm",
+					position: {x: 971, y:110},
+					office: "test"
+				});
+*/
+
+
+	 //return date;
+
+	 console.log(this.curr_name);
+/*
+	 if (this.curr_name)
+	 {
+		
+		 this.tables.push({
+					name: 'yerterte',
+					visibility: "visible",
+					mon: 3,
+					type: "rm",
+					position: {x: 971, y:110},
+					office: "test"
+				});
+	 }
+	 */
+	 //  console.log(this.tables);
+
+	 //  return this.curr_name;
+   }
+
 
 
  addtable() {
@@ -48,6 +126,7 @@ export class SchemeComponent {
 
     //console.log(this.tables);
   }
+
 
 
 // создаем новое место
@@ -91,7 +170,8 @@ newposition(x: number, x2: number, y: number, y2: number)
 
 
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
+  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient ) {
+
 
 
 
@@ -191,10 +271,10 @@ tableslist()
 				this.tables.push({
 					name: Object.values(data)[index]["name"],
 					visibility: Object.values(data)[index]["visibility"],
-          mon: Object.values(data)[index]["mon"],
-          type: Object.values(data)[index]["type"],
-          position: {x: Object.values(data)[index]["position"]["x"], y:Object.values(data)[index]["position"]["y"]},
-          office: Object.values(data)[index]["office"]
+					mon: Object.values(data)[index]["mon"],
+					type: Object.values(data)[index]["type"],
+					position: {x: Object.values(data)[index]["position"]["x"], y:Object.values(data)[index]["position"]["y"]},
+					office: Object.values(data)[index]["office"]
 				});
 
 
@@ -232,16 +312,163 @@ GetStatus(user: string)
 	}
 
 
-book()
+book(name: any)
 	{
-	alert("В разработке..");
+	// alert("В разработке..");
+
+	//console.log(name);
+
+	   const dialogRef = this.dialog.open(booking, {
+      data: {name: name}});
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result !== undefined) {
+
+			//   this.choffice.set("ok, " + result);
+
+		  
+		  }
+
+		 
+      }
+    );
 	}
 
 
 
 
+ onChange(curr_name: any): void {
+   // this.selectedCategory.emit(newvalue);
+
+   console.log('ok');
+  }
+
+ngOnInit(): void {
+
+	console.log(this.curr_name);
+
+	if (this.curr_name!='')
+	{
+		console.log(1232);
+	}
+
 
   }
+
+
+  }
+
+
+
+  @Component({
+  selector: 'booking',
+  templateUrl: './booking.html',
+  standalone: true,
+  providers: [provideNativeDateAdapter(),SchemeComponent],
+  imports: [
+	HttpClientModule,
+    MatFormFieldModule,
+    MatInputModule,
+	MatSelectModule,
+    FormsModule,
+    MatButtonModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+	MatDatepickerModule,
+  ],
+})
+
+export class booking  {
+  readonly dialogRef = inject(MatDialogRef<booking>);
+  readonly data = inject<DialogData>(MAT_DIALOG_DATA);
+
+
+
+  bookingForm:
+	  any = {
+	  date: '',
+	}
+
+
+ 
+
+constructor(private http: HttpClient, private schemeComponent: SchemeComponent){
+	
+
+
+
+
+
+}
+
+doBook()
+{
+	 if (this.bookingForm.date!="")
+	 {
+
+		 
+		   var book_json = JSON.stringify({book_name: this.data.name, book_date: this.bookingForm.date.toLocaleString().substring(0, 10)});
+		   
+		   this.http.post("https://rieltorov.net/tmp/office_api.php", book_json).subscribe(  data => {
+
+			  
+
+			   if (data!=null)
+			   {
+			   //}
+
+			  
+			   
+			   (Object.keys(data)).forEach((key, index) => {
+				   
+				   if (Number(Object.values(data)[0])>0)
+				   {
+					   alert("Бронирование успешно!");
+					   this.onNoClick();
+				   };
+				
+				});
+
+		   }
+
+			}, error => {console.log(error)});
+			
+		
+	    console.log(this.data.name + ", " +this.bookingForm.date.toLocaleString().substring(0, 10));
+
+
+	 }
+	 
+}
+
+ onDate(event: any): void {
+
+	 this.schemeComponent.curr_name = this.data.name;
+
+
+	 this.schemeComponent.getbooking(this.data.name);
+
+
+
+
+	// this.curr_name2 = this.data.name;
+
+ //console.log(this.schemeComponent.curr_name);
+
+	 const stringified = JSON.stringify(event.value);
+    const dob = stringified.substring(1, 11);
+    console.log(dob);
+	//this.applicant.contact[0].dob = dob;
+   
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+}
 
 
 

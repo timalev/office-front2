@@ -5,11 +5,17 @@
   display: block;
 }
 
-.vis {
+.hid {
 
 visibility: hidden;
 
 }
+.vis {
+
+visibility: visible;
+
+}
+
 .alert div {
   background-color: #fed3d3;
   color: #820000;
@@ -38,7 +44,22 @@ visibility: hidden;
   display: inline-block;
   box-sizing: border-box;
   cursor: move;
-  background: white;
+  background: #603737;
+  text-align: center;
+  font-size: 14px;
+  min-width: 115px;
+  position: absolute;
+}
+
+.example-box-booked {
+  padding: 20px 10px;
+  border: solid 1px #ccc;
+  border-radius: 4px;
+  color: rgba(0, 0, 0, 0.87);
+  display: inline-block;
+  box-sizing: border-box;
+  cursor: move;
+  background: gray;
   text-align: center;
   font-size: 14px;
   min-width: 115px;
