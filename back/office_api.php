@@ -22,7 +22,7 @@ $dbname="rieltorov";
 	mysqli_query($conn, "SET NAMES utf8");
 
 
-	
+
 $post = json_decode(file_get_contents('php://input'), true);
 
 if(isset($post['json']))
@@ -52,9 +52,9 @@ if(isset($post['group_name']))
 
 if(isset($post['book_name']) && isset($post['book_date']))
 {
-	$date = explode(".",$post['book_date']);
+	$date = explode("-",$post['book_date']);
 
-	$sql_q = "INSERT INTO of_booking (_name,_date) VALUES ('".$post['book_name']."','".$date[2]."-".$date[1]."-".$date[0]."')";
+	$sql_q = "INSERT INTO of_booking (_name,_date) VALUES ('".$post['book_name']."','".$date[0]."-".$date[1]."-".$date[2]."')";
     if (!$sql_res = mysqli_query($conn,$sql_q)) echo "[\"err\"]";
 	else echo "[\"".mysqli_insert_id($conn)."\"]";
 }
@@ -68,11 +68,22 @@ if(isset($post['book_name']) && isset($post['book_date']))
 				$users = array();
 			    $sql_q = "SELECT * FROM of_users ORDER BY id ASC";
 		        if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
-				
+
 				while ($rows = mysqli_fetch_array($sql_res))
 					$users[] = '{"id":'.$rows["id"].',"name": "'.$rows["_users"].'","group": '.$rows["_groups"].'}';
-				
+
 				echo '['.implode(",",$users).']';
+			break;
+
+      case "getbooks":
+				$users = array();
+			    $sql_q = "SELECT * FROM of_booking ORDER BY id ASC";
+		        if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
+
+				while ($rows = mysqli_fetch_array($sql_res))
+					$books[] = '{"id":'.$rows["id"].',"name": "'.$rows["_name"].'","date": "'.$rows["_date"].'"}';
+
+				echo '['.implode(",",$books).']';
 			break;
 
 			case "tables":
@@ -88,7 +99,7 @@ if(isset($post['book_name']) && isset($post['book_date']))
 				$rows = mysqli_fetch_array($sql_res);
 				//echo '{"'.$rows["_status"].'"}';
                 echo '{"status": "'.$rows["_status"].'"}';
-				
+
 			break;
 
 			case "delgroup":
@@ -101,16 +112,16 @@ if(isset($post['book_name']) && isset($post['book_date']))
 				$groups = array();
 			    $sql_q = "SELECT * FROM of_groups ORDER BY id ASC";
 		        if (!$sql_res = mysqli_query($conn,$sql_q))echo "[\"err\"]";
-				
+
 				while ($rows = mysqli_fetch_array($sql_res))
 					$groups[] = '{"id":'.$rows["id"].',"name": "'.$rows["_groups"].'"}';
-				
+
 				echo '['.implode(",",$groups).']';
 
 		}
 	}
-	
-	
+
+
 
 
 

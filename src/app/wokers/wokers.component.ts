@@ -35,7 +35,7 @@ export interface DialogData {
   arrayOffices: any;
   arrayGroups: any;
 }
- 
+
 @Component({
 
     selector: "workers-app",
@@ -57,7 +57,7 @@ export class WokersComponent {
   dialog = inject(MatDialog);
   myArray = signal([{id: 1, name: 'Офис 1'}, {id:2, name: 'Офис 2'}]);
   myArrayGr = signal([{id: 1, name: 'Группа 1'}, {id:2, name: 'Группа 2'}, {id:3, name: 'Группа 3'}]);
- 
+
 
   openDialog(type: string): void {
 
@@ -80,10 +80,10 @@ export class WokersComponent {
 		  default:
 			   this.choffice.set("ok of, " + result);
 
-		  
+
 		  }
 
-		 
+
       }
     });
   }
@@ -120,14 +120,14 @@ groupForm:
 			console.log(user.email);
 
 			//if (user.email!=null)
-			
-			
+
+
 			//console.log(myapp.GetStatus(user.email));
 
 			if (user.email!=null)
 			{
 				this.GetStatus(user.email);
-				
+
 			}
 
 
@@ -216,12 +216,12 @@ userslist()
 
 
 			(Object.keys(data)).forEach((key, index) => {
-				this.status=Object.values(data)[0];	
-				
+				this.status=Object.values(data)[0];
+
 				console.log(this.status);
-				
+
 				});
-				
+
 
 			});
 
@@ -231,24 +231,24 @@ userslist()
 	{
 		if (this.officeForm.oname!="")
 		{
-		
+
 		  var off_json = JSON.stringify({office_name: this.officeForm.oname});
 
-	
+
 	//const body = {json: tables_json};
 	this.http.post("https://rieltorov.net/tmp/office_api.php", off_json).subscribe(  data => {
 
 			(Object.keys(data)).forEach((key, index) => {
-				
-				
+
+
 				if (Object.values(data)[0]=='ok')
 				{
 					alert("Офис создан успешно");
 				};
-				
+
 				});
-	
-		
+
+
 	});
 		}
 	else
@@ -261,18 +261,18 @@ userslist()
 	{
 		if (this.groupForm.grname!="")
 		{
-		
+
 		  var grp_json = JSON.stringify({group_name: this.groupForm.grname});
 
-	
+
 	this.http.post("https://rieltorov.net/tmp/office_api.php", grp_json).subscribe(  data => {
 
 			(Object.keys(data)).forEach((key, index) => {
 
 
 			//console.log(Object.values(data)[0]);
-				
-				
+
+
 				if (Object.values(data)[0]!='')
 				{
 
@@ -281,14 +281,14 @@ userslist()
 					id: Object.values(data)[0],
 					name: this.groupForm.grname,
 					});
-					
+
 
 					alert("Группа успешно создана");
 				};
-				
+
 				});
-	
-		
+
+
 	});
 		}
 	else
@@ -307,15 +307,15 @@ userslist()
 
 
 				(Object.keys(data)).forEach((key, index) => {
-				
-				
+
+
 				if (Object.values(data)[0]=='ok')
 				{
 					this.groups = this.groups.filter(group => group.id !== id);
 
 					alert("Группа удалена");
 				};
-				
+
 				});
 
 
@@ -323,7 +323,7 @@ userslist()
 			return false;
 	}
 
-	
+
 
 
 

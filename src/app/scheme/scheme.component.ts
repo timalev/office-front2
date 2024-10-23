@@ -10,32 +10,6 @@ import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } 
 
 import {CdkDragDrop, CdkDragEnd, CdkDrag, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
 
-import {MatSelectModule} from '@angular/material/select';
-import {MatButtonModule} from '@angular/material/button';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle,
-} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-
-
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {provideNativeDateAdapter} from '@angular/material/core';
-
-
-
-
-export interface DialogData {
-  
-  name: string;
-  
-}
 
 
 
@@ -44,70 +18,37 @@ export interface DialogData {
     templateUrl: './scheme.component.html',
     styleUrls: ['./scheme.component.scss'],
     standalone: true,
-  
+
 
     imports: [FormsModule,
 		HttpClientModule,
 		CommonModule,
-		CdkDropList, CdkDrag, MatFormFieldModule, MatInputModule,MatSelectModule, FormsModule, MatButtonModule],
-	
+		CdkDropList, CdkDrag],
+
 })
 
 
 export class SchemeComponent implements OnInit {
 
    offices: Array<{id: number; name: string; } > = [];
-   tables:   Array<{name: string; visibility: string; mon: number; type: string; position: {x: number, y: number}; office: string} > = [];
+   tables:   Array<{name: string; visibility: string; mon: number; type: string; position: {x: number, y: number}; office: string, book: string;} > = [];
+
+   books: Array<{id: number; name: string; date: string;} > = [];
 
 	 //disablestatus: boolean = false;
-   
+
    status = '';
    disdrag: boolean = true;
 
-   curr_name = '';
+   selectedTable = '';
+   busy = '';
 
-   dialog = inject(MatDialog);
-
-
-
- getbooking(date: string) {
-
-	this.tables =[];
-
-	 this.curr_name = date;
-/*
-this.tables.push({
-					name: 'yerterte',
-					visibility: "visible",
-					mon: 3,
-					type: "rm",
-					position: {x: 971, y:110},
-					office: "test"
-				});
-*/
+   bookingForm:
+	  any = {
+	  date: '',
+	}
 
 
-	 //return date;
-
-	 console.log(this.curr_name);
-/*
-	 if (this.curr_name)
-	 {
-		
-		 this.tables.push({
-					name: 'yerterte',
-					visibility: "visible",
-					mon: 3,
-					type: "rm",
-					position: {x: 971, y:110},
-					office: "test"
-				});
-	 }
-	 */
-	 //  console.log(this.tables);
-
-	 //  return this.curr_name;
-   }
 
 
 
@@ -121,6 +62,7 @@ this.tables.push({
           type: this.tablesForm.tabtype,
           position: {x: Number(this.tablesForm.x), y:Number(this.tablesForm.y)},
           office: this.tablesForm.office,
+          book: '',
 				});
 
 
@@ -137,7 +79,7 @@ dragEnded_new(event: CdkDragEnd<string[]>,i: number)
 
 // отправляем координаты в бэк
 
-   this.updateTables(); 
+   this.updateTables();
 
   }
 
@@ -173,9 +115,9 @@ newposition(x: number, x2: number, y: number, y2: number)
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient ) {
 
 
-
-
 	  //console.log(this.dropDisable());
+
+
 
 
     const auth = getAuth();
@@ -185,18 +127,25 @@ newposition(x: number, x2: number, y: number, y2: number)
 		if (user) {
 			const uid = user.uid;
 			//console.log(user.email);
-			
+
 			if (user.email!=null)
 			{
 				this.GetStatus(user.email);
-				
+
 			}
-			
-			
+
+
 			this.isreg = 1;
 
       this.officeslist();
 			this.tableslist();
+      this.getBooks();
+
+
+
+      this.checkDate(this.busy);
+
+
 		}
         else
         {
@@ -217,7 +166,44 @@ dropDisable(): number {
 
 */
 
+doBook()
+{
+	 if (this.bookingForm.date!="")
+	 {
+       console.log(this.bookingForm.date + " / " + this.selectedTable);
 
+
+		   var book_json = JSON.stringify({book_name: this.selectedTable, book_date: this.bookingForm.date});
+
+		   this.http.post("https://rieltorov.net/tmp/office_api.php", book_json).subscribe(  data => {
+
+
+
+			   if (data!=null)
+			   {
+			   //}
+
+
+
+			   (Object.keys(data)).forEach((key, index) => {
+
+				   if (Number(Object.values(data)[0])>0)
+				   {
+					   alert("Бронирование успешно!");
+
+				   };
+
+				});
+
+		   }
+
+			}, error => {console.log(error)});
+
+
+
+	 }
+
+}
 
 
 updateTables()
@@ -225,7 +211,7 @@ updateTables()
 	var tables_json = JSON.stringify(this.tables);
 	const body = {json: tables_json};
 	this.http.post("https://rieltorov.net/tmp/office_api.php", body).subscribe(  data => {
-		
+
 	});
 }
 
@@ -274,7 +260,8 @@ tableslist()
 					mon: Object.values(data)[index]["mon"],
 					type: Object.values(data)[index]["type"],
 					position: {x: Object.values(data)[index]["position"]["x"], y:Object.values(data)[index]["position"]["y"]},
-					office: Object.values(data)[index]["office"]
+					office: Object.values(data)[index]["office"],
+          book : ''
 				});
 
 
@@ -300,58 +287,122 @@ GetStatus(user: string)
 
 
 			(Object.keys(data)).forEach((key, index) => {
-				this.status=Object.values(data)[0];	
-				
+				this.status=Object.values(data)[0];
+
 				console.log(this.status);
-				
+
 				});
-				
+
 
 			});
 
 	}
 
 
-book(name: any)
-	{
-	// alert("В разработке..");
-
-	//console.log(name);
-
-	   const dialogRef = this.dialog.open(booking, {
-      data: {name: name}});
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      if (result !== undefined) {
-
-			//   this.choffice.set("ok, " + result);
-
-		  
-		  }
-
-		 
-      }
-    );
-	}
 
 
-
-
- onChange(curr_name: any): void {
+ checkDate(date: string): string {
    // this.selectedCategory.emit(newvalue);
 
-   console.log('ok');
+ //  this.busy = date;
+
+   //console.log(this.busy);
+
+
+
+      let datec = date;
+
+    //  var result = this.books.find(({ date }) => date === datec );
+
+
+      const items = this.books.filter(item => item.date.indexOf(datec) !== -1);
+
+console.log(items);
+
+
+	items.forEach((key, index) => {
+
+    //console.log(items[index]["name"]);
+
+/*
+				this.books.push({
+					id: Object.values(data)[index]["id"],
+					name: Object.values(data)[index]["name"],
+          date: Object.values(data)[index]["date"],
+					});
+  */
+
+	});
+
+
+  this.tables.forEach((key, index) => {
+
+
+/*
+
+    		this.tables.push({
+					name: this.tables[index]["name"],
+					visibility: this.tables[index]["visibility"],
+					mon: this.tables[index]["mon"],
+					type: this.tables[index]["type"],
+					position: {x: this.tables[index]["position"]["x"], y:this.tables[index]["position"]["y"]},
+					office: this.tables[index]["office"],
+          book : ''
+				});
+*/
+
+
+	});
+
+
+
+  console.log(this.tables);
+
+
+  //this.tables.find(item=>item.name==items.name).book = '1';
+
+
+
+
+return '';
+
   }
+
+
+
+getBooks(): void {
+
+
+
+   let params = new HttpParams()
+			.set('type','getbooks');
+
+		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+
+
+
+			(Object.keys(data)).forEach((key, index) => {
+
+
+				this.books.push({
+					id: Object.values(data)[index]["id"],
+					name: Object.values(data)[index]["name"],
+          date: Object.values(data)[index]["date"],
+					});
+
+	});
+
+
+			});
+//console.log(this.books);
+
+  }
+
+
+
 
 ngOnInit(): void {
 
-	console.log(this.curr_name);
-
-	if (this.curr_name!='')
-	{
-		console.log(1232);
-	}
 
 
   }
@@ -359,116 +410,6 @@ ngOnInit(): void {
 
   }
 
-
-
-  @Component({
-  selector: 'booking',
-  templateUrl: './booking.html',
-  standalone: true,
-  providers: [provideNativeDateAdapter(),SchemeComponent],
-  imports: [
-	HttpClientModule,
-    MatFormFieldModule,
-    MatInputModule,
-	MatSelectModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogClose,
-	MatDatepickerModule,
-  ],
-})
-
-export class booking  {
-  readonly dialogRef = inject(MatDialogRef<booking>);
-  readonly data = inject<DialogData>(MAT_DIALOG_DATA);
-
-
-
-  bookingForm:
-	  any = {
-	  date: '',
-	}
-
-
- 
-
-constructor(private http: HttpClient, private schemeComponent: SchemeComponent){
-	
-
-
-
-
-
-}
-
-doBook()
-{
-	 if (this.bookingForm.date!="")
-	 {
-
-		 
-		   var book_json = JSON.stringify({book_name: this.data.name, book_date: this.bookingForm.date.toLocaleString().substring(0, 10)});
-		   
-		   this.http.post("https://rieltorov.net/tmp/office_api.php", book_json).subscribe(  data => {
-
-			  
-
-			   if (data!=null)
-			   {
-			   //}
-
-			  
-			   
-			   (Object.keys(data)).forEach((key, index) => {
-				   
-				   if (Number(Object.values(data)[0])>0)
-				   {
-					   alert("Бронирование успешно!");
-					   this.onNoClick();
-				   };
-				
-				});
-
-		   }
-
-			}, error => {console.log(error)});
-			
-		
-	    console.log(this.data.name + ", " +this.bookingForm.date.toLocaleString().substring(0, 10));
-
-
-	 }
-	 
-}
-
- onDate(event: any): void {
-
-	 this.schemeComponent.curr_name = this.data.name;
-
-
-	 this.schemeComponent.getbooking(this.data.name);
-
-
-
-
-	// this.curr_name2 = this.data.name;
-
- //console.log(this.schemeComponent.curr_name);
-
-	 const stringified = JSON.stringify(event.value);
-    const dob = stringified.substring(1, 11);
-    console.log(dob);
-	//this.applicant.contact[0].dob = dob;
-   
-  }
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-}
 
 
 
