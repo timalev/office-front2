@@ -3,6 +3,54 @@
 
 
 
+
+
+
+
+<div [ngClass]="selectedUser == 0 ? 'wind2' : 'wind2_vis'" id="wind2">№ Пользователя: <b>{{this.selectedUser}}</b><br/><br/>
+
+
+
+	<label for="start">Группа:</label>&nbsp;
+
+	<select [(ngModel)]="adduserForm.grid"> 
+    <option *ngFor="let group of groups" [value]="group.id">{{group.name}}</option>
+</select>
+<br/><br/>
+ 
+<button type="button"  (click)="addUser()" >прикрепить к группе</button>&nbsp;&nbsp;
+<button type="button"  (click)="selectedUser=0">закрыть</button>
+
+
+
+    </div>
+
+
+
+<div [ngClass]="selectedGroup == 0 ? 'wind2' : 'wind2_vis'" id="wind2">№ группы: <b>{{this.selectedGroup}}</b><br/><br/>
+
+
+
+	<label for="start">Офис:</label>&nbsp;
+
+	<select [(ngModel)]="addgroupForm.ofid"> 
+    <option *ngFor="let office of offices" [value]="office.id">{{office.name}}</option>
+</select>
+<br/><br/>
+ 
+<button type="button"  (click)="attGroup()" >прикрепить к офису</button>&nbsp;&nbsp;
+<button type="button"  (click)="selectedGroup=0">закрыть</button>
+
+
+
+    </div>
+
+
+
+
+
+
+
 <div [class.hide]="isreg==0 || status=='сотрудник' || status==''">
 
 
@@ -71,8 +119,16 @@
       <tr *ngFor="let group of groups">
           <td>{{group.id}}</td>
           <td>{{group.name}}</td>
-		  <td> <button mat-raised-button (click)="openDialog('office')">Прикрепить к офису</button> </td>
-           <td> &nbsp;<a style="text-decoration: none;" href=# (click)="delGroup('group'); "><font color=red>x</font></a> &nbsp;</td>
+		  <td>{{group.office}}</td>
+		  <td> 
+		  <!--
+		  <button mat-raised-button (click)="openDialog('office')">Прикрепить к офису</button> 
+		  -->
+
+		   <input type="button" value="Прикрепить к офису" (click)="this.selectedGroup = group.id">
+		  
+		  </td>
+           <td> &nbsp;<a style="text-decoration: none;" href=# (click)="delGroup(group.id); "><font color=red>x</font></a> &nbsp;</td>
 
       </tr>
 </table>
@@ -92,8 +148,17 @@
       <tr *ngFor="let user of users">
           <td>{{user.id}}</td>
           <td>{{user.name}}</td>
-		  <td>{{user.group}}</td>
-		  <td> <button mat-raised-button (click)="openDialog('group')">Прикрепить к группе</button> </td>
+		  <td>{{user.groupname}}</td>
+		  <td>
+		  
+
+		  <input type="button" value="Прикрепить к группе" (click)="this.selectedUser = user.id">
+		  
+<!--		  <button mat-raised-button (click)="openDialog('group')">Прикрепить к группе</button> -->
+		  
+		  
+		  
+		  </td>
 
       </tr>
 </table>

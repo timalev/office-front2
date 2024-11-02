@@ -1,1 +1,45 @@
-<p>в стадии разработки..</p>
+<h1>Загруженность офиса</h1>
+
+
+ 
+<div [class.hide]="isreg==0 ">
+
+<div>
+
+<label >Выберите офис:</label>&nbsp;
+
+
+  <select [(ngModel)]="officeForm.office"  (change)="getOffice(this)" >
+      <option *ngFor="let office of offices" [ngValue]="office.id">{{office.name}}</option>
+     </select>
+
+
+</div>
+
+<br>
+<div [class.hide]="this.office==''" event.officeForm.office>
+
+
+<label for="start">Выберите день:</label>
+
+
+
+&nbsp;<input type="date" id="start" name="trip-start"  (change)="checkDate(this.bookingForm.date)"  [(ngModel)]="bookingForm.date" />
+<br/><br/>
+<!--
+<button type="button"  (click)="doBook()" >забронировать</button>&nbsp;&nbsp;
+
+<button type="button"  (click)="selectedTable=''">закрыть</button>
+-->
+
+</div>
+
+<div>
+<br> {{this.loadreport}} 
+</div>
+
+</div>
+
+<div [class.hide]="isreg==1">
+<p>Для просмотра данного раздела необходимо <a href="/">авторизоваться</a></p>
+</div>

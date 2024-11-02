@@ -11,30 +11,6 @@ import { getAuth,createUserWithEmailAndPassword, signInWithEmailAndPassword, onA
 import { getDatabase, ref, set, update } from "firebase/database";
 import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-import {MatSelectModule} from '@angular/material/select';
-import {MatButtonModule} from '@angular/material/button';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle,
-} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-
-
-
-export interface DialogData {
-  chgroup: string;
-  choffice: string;
-  name: string;
-  type2: string;
-  arrayOffices: any;
-  arrayGroups: any;
-}
 
 @Component({
 
@@ -42,59 +18,28 @@ export interface DialogData {
     templateUrl: './workers.component.html',
     styleUrls: ['./workers.component.scss'],
     standalone: true,
-    imports: [FormsModule,HttpClientModule,CommonModule, MatFormFieldModule, MatInputModule,MatSelectModule, FormsModule, MatButtonModule],
+    imports: [FormsModule,HttpClientModule,CommonModule],
 })
 
 
 export class WokersComponent {
 
 
-
- choffice = signal('');
- chgroup = signal('');
-  name = model('');
-  type2 = '';
-  dialog = inject(MatDialog);
-  myArray = signal([{id: 1, name: 'Офис 1'}, {id:2, name: 'Офис 2'}]);
-  myArrayGr = signal([{id: 1, name: 'Группа 1'}, {id:2, name: 'Группа 2'}, {id:3, name: 'Группа 3'}]);
+	selectedUser = 0;
+	selectedGroup = 0;
 
 
-  openDialog(type: string): void {
-
-	 this.type2=type;
-
-    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
-      data: {name: this.name(), choffice: this.choffice(), chgroup: this.chgroup(),arrayOffices: this.myArray(),arrayGroups: this.myArrayGr(),type2: this.type2}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      if (result !== undefined) {
-
-		  switch (this.type2)
-		  {
-		  case "group":
-			  this.chgroup.set("ok gr, " + result);
-		  break;
-
-		  default:
-			   this.choffice.set("ok of, " + result);
 
 
-		  }
 
-
-      }
-    });
-  }
 
 
   isreg = 0;
   status = '';
 
-   offices: Array<{id: number; name: string; } > = [];
-	 groups: Array<{id: number; name: string; } > = [];
-	 users: Array<{id: number; name: string; group: string; } > = [];
+   offices: Array<{id: number; name: string;   } > = [];
+	 groups: Array<{id: number; name: string; office: string;} > = [];
+	 users: Array<{id: number; name: string; group: string; groupname: string; } > = [];
 
 officeForm:
   any = {
@@ -105,6 +50,15 @@ groupForm:
   any = {
     grname: '',
   }
+adduserForm:
+	any = {
+	grid: 0,
+}
+addgroupForm:
+	any = {
+	grof: 0,
+}
+	
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
 
@@ -173,7 +127,8 @@ groupslist()
 			(Object.keys(data)).forEach((key, index) => {
 				this.groups.push({
 					id: Object.values(data)[index]["id"],
-					name: Object.values(data)[index]["name"]
+					name: Object.values(data)[index]["name"],
+						  office: Object.values(data)[index]["office"]
 					});
 				});
 			});
@@ -191,7 +146,8 @@ userslist()
 				this.users.push({
 					id: Object.values(data)[index]["id"],
 					name: Object.values(data)[index]["name"],
-					group: Object.values(data)[index]["group"]
+					group: Object.values(data)[index]["group"],
+					groupname: Object.values(data)[index]["group_name"]
 					});
 				});
 
@@ -226,6 +182,83 @@ userslist()
 			});
 
 	}
+
+
+attGroup()
+	{
+
+	console.log(this.addgroupForm.ofid + " / " + this.selectedGroup);
+
+
+
+
+	if (this.addgroupForm.ofid!="")
+	 {
+		   var addgroup_json = JSON.stringify({office: this.addgroupForm.ofid, add_group: this.selectedGroup});
+
+		   this.http.post("https://rieltorov.net/tmp/office_api.php", addgroup_json).subscribe(  data => {
+
+			   if (data!=null)
+			   {
+
+			   (Object.keys(data)).forEach((key, index) => {
+
+				  if (Object.values(data)[0]=='ok')
+				{
+					alert("Группа прикреплена");
+				};
+
+				});
+
+		   }
+
+			}, error => {console.log(error)});
+	 }
+
+
+
+
+
+	}
+
+
+
+
+
+
+
+
+addUser()
+{
+
+	console.log(this.adduserForm.grid + " / " + this.selectedUser);
+	
+	 if (this.adduserForm.grid!="")
+	 {
+		   var adduser_json = JSON.stringify({group: this.adduserForm.grid, add_user: this.selectedUser});
+
+		   this.http.post("https://rieltorov.net/tmp/office_api.php", adduser_json).subscribe(  data => {
+
+			   if (data!=null)
+			   {
+
+			   (Object.keys(data)).forEach((key, index) => {
+
+				  if (Object.values(data)[0]=='ok')
+				{
+					alert("Пользователь прикреплен");
+				};
+
+				});
+
+		   }
+
+			}, error => {console.log(error)});
+	 }
+}
+
+
+
 
 	addoffice()
 	{
@@ -280,6 +313,7 @@ userslist()
 					this.groups.push({
 					id: Object.values(data)[0],
 					name: this.groupForm.grname,
+				    office: ''
 					});
 
 
@@ -328,37 +362,3 @@ userslist()
 
 
 }
-
-
-@Component({
-  selector: 'dialog-overview-example-dialog',
-  templateUrl: './dialog-overview-example-dialog.html',
-  standalone: true,
-  imports: [
-    MatFormFieldModule,
-    MatInputModule,
-	MatSelectModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogClose,
-  ],
-})
-export class DialogOverviewExampleDialog {
-  readonly dialogRef = inject(MatDialogRef<DialogOverviewExampleDialog>);
-  readonly data = inject<DialogData>(MAT_DIALOG_DATA);
-  readonly choffice = model(this.data.choffice);
-  readonly chgroup = model(this.data.chgroup);
-  readonly type2 = this.data.type2;
-  readonly arrayOffices =  this.data.arrayOffices;
-  readonly arrayGroups =  this.data.arrayGroups;
-
-
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-}
-

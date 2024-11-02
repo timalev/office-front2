@@ -33,7 +33,7 @@ export class SchemeComponent implements OnInit {
    offices: Array<{id: number; name: string; } > = [];
    tables:   Array<{name: string; visibility: string; mon: number; type: string; position: {x: number, y: number}; office: string, book: string;} > = [];
 
-   books: Array<{id: number; name: string; date: string;} > = [];
+   books: Array<{id: number; name: string; date: string; user: string;} > = [];
 
 	 //disablestatus: boolean = false;
 
@@ -41,11 +41,18 @@ export class SchemeComponent implements OnInit {
    disdrag: boolean = true;
 
    selectedTable = '';
-   busy = '';
+   tableType = '';
+
+   useroffice = '';
+   user = '';
+
+   isbooked: string[] = [];
+
 
    bookingForm:
 	  any = {
 	  date: '',
+	  datetime: '',
 	}
 
 
@@ -130,7 +137,10 @@ newposition(x: number, x2: number, y: number, y2: number)
 
 			if (user.email!=null)
 			{
+				this.user = user.email;
 				this.GetStatus(user.email);
+
+				
 
 			}
 
@@ -143,7 +153,7 @@ newposition(x: number, x2: number, y: number, y2: number)
 
 
 
-      this.checkDate(this.busy);
+     // this.checkDate(this.busy);
 
 
 		}
@@ -165,19 +175,40 @@ dropDisable(): number {
 }
 
 */
+/*
+isbooked(name: string)
+	{
+	//this.books
+	  const newItem = this.books.find(newItem => newItem.name === name);
 
+	 // console.log(newItem);
+
+	   return '';
+	}
+	*/
 doBook()
 {
-	 if (this.bookingForm.date!="")
+	
+	 if (this.bookingForm.date!="" || this.bookingForm.datetime!="")
 	 {
-       console.log(this.bookingForm.date + " / " + this.selectedTable);
+		 let date = this.bookingForm.date;
+		 let time = "00:00";
+
+		 if (this.bookingForm.datetime!=""){
+			 date = this.bookingForm.datetime.split("T")[0];
+			 time = this.bookingForm.datetime.split("T")[1];
+		}
+      // console.log(this.bookingForm.date + " / " + this.selectedTable);
 
 
-		   var book_json = JSON.stringify({book_name: this.selectedTable, book_date: this.bookingForm.date});
+		   var book_json = JSON.stringify({book_name: this.selectedTable, book_date: date, book_time: time, user: this.user});
 
 		   this.http.post("https://rieltorov.net/tmp/office_api.php", book_json).subscribe(  data => {
 
 
+
+
+    this.isbooked.push(this.selectedTable);
 
 			   if (data!=null)
 			   {
@@ -244,12 +275,53 @@ deltab(i:number)
 	});
 }
 
+unbook(table:string)
+{
+
+	 var unbook_json = JSON.stringify({unbook: table});
+
+
+	this.http.post("https://rieltorov.net/tmp/office_api.php", unbook_json).subscribe(  data => {
+
+
+    this.isbooked.splice(this.isbooked.indexOf(table), 1);
+
+
+	 if (Object.values(data)[0]=='ok')
+				{
+					alert("Бронирование отменено");
+				};
+	});
+
+}
+
+
 tableslist()
 	{
 		let params = new HttpParams()
 			.set('type','tables');
 
 		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+
+
+
+
+
+
+
+const offc = Object.values(data).filter(newItem=>newItem.office===1);
+
+//console.log(offc);
+
+
+
+
+
+
+
+
+
+
 
 
 			(Object.keys(data)).forEach((key, index) => {
@@ -285,11 +357,14 @@ GetStatus(user: string)
 
 		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
 
-
+	
 			(Object.keys(data)).forEach((key, index) => {
-				this.status=Object.values(data)[0];
 
-				console.log(this.status);
+				//console.log(Object.values(data));
+				this.status=Object.values(data)[0];
+				this.useroffice = Object.values(data)[1];
+
+				console.log(this.useroffice);
 
 				});
 
@@ -301,70 +376,35 @@ GetStatus(user: string)
 
 
 
- checkDate(date: string): string {
-   // this.selectedCategory.emit(newvalue);
+ checkDate(date: string) {
 
- //  this.busy = date;
+//console.log(this.tables);
 
-   //console.log(this.busy);
+       this.tables = this.tables.map(item => {
+  
+    return  { ...item, book: '' };
+  });
+
 
 
 
       let datec = date;
 
-    //  var result = this.books.find(({ date }) => date === datec );
-
-
-      const items = this.books.filter(item => item.date.indexOf(datec) !== -1);
-
-console.log(items);
-
-
-	items.forEach((key, index) => {
-
-    //console.log(items[index]["name"]);
-
-/*
-				this.books.push({
-					id: Object.values(data)[index]["id"],
-					name: Object.values(data)[index]["name"],
-          date: Object.values(data)[index]["date"],
-					});
-  */
-
-	});
-
-
-  this.tables.forEach((key, index) => {
-
-
-/*
-
-    		this.tables.push({
-					name: this.tables[index]["name"],
-					visibility: this.tables[index]["visibility"],
-					mon: this.tables[index]["mon"],
-					type: this.tables[index]["type"],
-					position: {x: this.tables[index]["position"]["x"], y:this.tables[index]["position"]["y"]},
-					office: this.tables[index]["office"],
-          book : ''
-				});
-*/
-
-
-	});
-
-
-
-  console.log(this.tables);
-
-
-  //this.tables.find(item=>item.name==items.name).book = '1';
+  
+      let items = this.books.filter(item => item.date.indexOf(datec) !== -1);
 
 
 
 
-return '';
+ this.tables = this.tables.map(item => {
+    const newItem = items.find(newItem => newItem.name === item.name);
+    return newItem ? { ...item, book: '1' } : item;
+  });
+
+
+
+console.log(this.tables);
+ 
 
   }
 
@@ -380,6 +420,23 @@ getBooks(): void {
 		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
 
 
+			//console.log(Object.values(data));
+
+
+// получаем забронированые места для конкретного пользователя
+
+			var newItem = Object.values(data).filter(newItem => newItem.user === this.user);
+
+		newItem.forEach((key, index) => {
+
+			this.isbooked.push(newItem[index].name);
+				 
+			});
+
+// получаем забронированые места для конкретного пользователя конец
+
+			//console.log(this.isbooked);
+
 
 			(Object.keys(data)).forEach((key, index) => {
 
@@ -388,13 +445,16 @@ getBooks(): void {
 					id: Object.values(data)[index]["id"],
 					name: Object.values(data)[index]["name"],
           date: Object.values(data)[index]["date"],
+						 user: Object.values(data)[index]["user"],
 					});
 
 	});
 
 
 			});
-//console.log(this.books);
+
+
+  
 
   }
 

@@ -12,6 +12,33 @@
   margin-bottom: 1rem;
 }
 
+.wind2 {
+       position: absolute;
+    width:300px;
+    left: 35%;
+      top: 300px;
+    border:solid #4699C3 4px;
+    text-align: left;
+  display: none;
+      z-index: 10;
+    overflow: hidden;
+    background-color:#fff;
+    color:#000;
 
+    padding:10px;
+}
+.wind2_vis {
+       position: absolute;
+    width:300px;
+    left: 35%;
+      top: 300px;
+    border:solid #4699C3 4px;
+    text-align: left;
+  display: block;
+      z-index: 10;
+    overflow: hidden;
+    background-color:#fff;
+    color:#000;
 
-
+    padding:10px;
+}

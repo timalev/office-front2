@@ -35,7 +35,7 @@ export interface DialogData {
   arrayOffices: any;
   arrayGroups: any;
 }
- 
+
 @Component({
 
     selector: "workers-app",
@@ -49,6 +49,10 @@ export interface DialogData {
 export class WokersComponent {
 
 
+	selectedUser = 0;
+	selectedGroup = 0;
+
+
 
  choffice = signal('');
  chgroup = signal('');
@@ -57,7 +61,7 @@ export class WokersComponent {
   dialog = inject(MatDialog);
   myArray = signal([{id: 1, name: 'Офис 1'}, {id:2, name: 'Офис 2'}]);
   myArrayGr = signal([{id: 1, name: 'Группа 1'}, {id:2, name: 'Группа 2'}, {id:3, name: 'Группа 3'}]);
- 
+
 
   openDialog(type: string): void {
 
@@ -80,10 +84,10 @@ export class WokersComponent {
 		  default:
 			   this.choffice.set("ok of, " + result);
 
-		  
+
 		  }
 
-		 
+
       }
     });
   }
@@ -92,9 +96,9 @@ export class WokersComponent {
   isreg = 0;
   status = '';
 
-   offices: Array<{id: number; name: string; } > = [];
-	 groups: Array<{id: number; name: string; } > = [];
-	 users: Array<{id: number; name: string; group: string; } > = [];
+   offices: Array<{id: number; name: string;   } > = [];
+	 groups: Array<{id: number; name: string; office: string;} > = [];
+	 users: Array<{id: number; name: string; group: string; groupname: string; } > = [];
 
 officeForm:
   any = {
@@ -105,6 +109,15 @@ groupForm:
   any = {
     grname: '',
   }
+adduserForm:
+	any = {
+	grid: 0,
+}
+addgroupForm:
+	any = {
+	grof: 0,
+}
+	
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
 
@@ -120,14 +133,14 @@ groupForm:
 			console.log(user.email);
 
 			//if (user.email!=null)
-			
-			
+
+
 			//console.log(myapp.GetStatus(user.email));
 
 			if (user.email!=null)
 			{
 				this.GetStatus(user.email);
-				
+
 			}
 
 
@@ -173,7 +186,8 @@ groupslist()
 			(Object.keys(data)).forEach((key, index) => {
 				this.groups.push({
 					id: Object.values(data)[index]["id"],
-					name: Object.values(data)[index]["name"]
+					name: Object.values(data)[index]["name"],
+						  office: Object.values(data)[index]["office"]
 					});
 				});
 			});
@@ -191,7 +205,8 @@ userslist()
 				this.users.push({
 					id: Object.values(data)[index]["id"],
 					name: Object.values(data)[index]["name"],
-					group: Object.values(data)[index]["group"]
+					group: Object.values(data)[index]["group"],
+					groupname: Object.values(data)[index]["group_name"]
 					});
 				});
 
@@ -216,39 +231,116 @@ userslist()
 
 
 			(Object.keys(data)).forEach((key, index) => {
-				this.status=Object.values(data)[0];	
-				
+				this.status=Object.values(data)[0];
+
 				console.log(this.status);
-				
+
 				});
-				
+
 
 			});
 
 	}
 
+
+attGroup()
+	{
+
+	console.log(this.addgroupForm.ofid + " / " + this.selectedGroup);
+
+
+
+
+	if (this.addgroupForm.ofid!="")
+	 {
+		   var addgroup_json = JSON.stringify({office: this.addgroupForm.ofid, add_group: this.selectedGroup});
+
+		   this.http.post("https://rieltorov.net/tmp/office_api.php", addgroup_json).subscribe(  data => {
+
+			   if (data!=null)
+			   {
+
+			   (Object.keys(data)).forEach((key, index) => {
+
+				  if (Object.values(data)[0]=='ok')
+				{
+					alert("Группа прикреплена");
+				};
+
+				});
+
+		   }
+
+			}, error => {console.log(error)});
+	 }
+
+
+
+
+
+	}
+
+
+
+
+
+
+
+
+addUser()
+{
+
+	console.log(this.adduserForm.grid + " / " + this.selectedUser);
+	
+	 if (this.adduserForm.grid!="")
+	 {
+		   var adduser_json = JSON.stringify({group: this.adduserForm.grid, add_user: this.selectedUser});
+
+		   this.http.post("https://rieltorov.net/tmp/office_api.php", adduser_json).subscribe(  data => {
+
+			   if (data!=null)
+			   {
+
+			   (Object.keys(data)).forEach((key, index) => {
+
+				  if (Object.values(data)[0]=='ok')
+				{
+					alert("Пользователь прикреплен");
+				};
+
+				});
+
+		   }
+
+			}, error => {console.log(error)});
+	 }
+}
+
+
+
+
 	addoffice()
 	{
 		if (this.officeForm.oname!="")
 		{
-		
+
 		  var off_json = JSON.stringify({office_name: this.officeForm.oname});
 
-	
+
 	//const body = {json: tables_json};
 	this.http.post("https://rieltorov.net/tmp/office_api.php", off_json).subscribe(  data => {
 
 			(Object.keys(data)).forEach((key, index) => {
-				
-				
+
+
 				if (Object.values(data)[0]=='ok')
 				{
 					alert("Офис создан успешно");
 				};
-				
+
 				});
-	
-		
+
+
 	});
 		}
 	else
@@ -261,34 +353,35 @@ userslist()
 	{
 		if (this.groupForm.grname!="")
 		{
-		
+
 		  var grp_json = JSON.stringify({group_name: this.groupForm.grname});
 
-	
+
 	this.http.post("https://rieltorov.net/tmp/office_api.php", grp_json).subscribe(  data => {
 
 			(Object.keys(data)).forEach((key, index) => {
 
 
-				console.log(Object.values(data)[0]);
-				
-				
-				if (Object.values(data)[0]=='ok')
+			//console.log(Object.values(data)[0]);
+
+
+				if (Object.values(data)[0]!='')
 				{
 
-/*
+
 					this.groups.push({
-					id: Object.values(data)[index]["id"],
-					name: Object.values(data)[index]["name"]
+					id: Object.values(data)[0],
+					name: this.groupForm.grname,
+				    office: ''
 					});
-					*/
+
 
 					alert("Группа успешно создана");
 				};
-				
+
 				});
-	
-		
+
+
 	});
 		}
 	else
@@ -307,15 +400,15 @@ userslist()
 
 
 				(Object.keys(data)).forEach((key, index) => {
-				
-				
+
+
 				if (Object.values(data)[0]=='ok')
 				{
 					this.groups = this.groups.filter(group => group.id !== id);
 
 					alert("Группа удалена");
 				};
-				
+
 				});
 
 
@@ -323,7 +416,7 @@ userslist()
 			return false;
 	}
 
-	
+
 
 
 

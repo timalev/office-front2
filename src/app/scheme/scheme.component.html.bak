@@ -1,17 +1,37 @@
 <h1>Рабочие места и переговорные</h1>
 
 
+
+<div [ngClass]="selectedTable == '' ? 'wind2' : 'wind2_vis'" id="wind2">Место: <b>{{this.selectedTable}}</b><br/><br/>Выберите дату бронирования:<br/><br/>
+
+
+
+	<label for="start">Дата:</label>
+
+
+<input [class.hide]="this.tableType=='rm'" type="datetime-local" [(ngModel)]="bookingForm.datetime" >
+
+&nbsp;<input  [class.hide]="this.tableType=='pe'" type="date" id="start" name="trip-start"  (change)="checkDate(this.bookingForm.date)"  [(ngModel)]="bookingForm.date" />
+<br/><br/>
+<button type="button"  (click)="doBook()" >забронировать</button>&nbsp;&nbsp;
+<button type="button"  (click)="selectedTable=''">закрыть</button>
+
+
+
+    </div>
+
+
 <!--
  @if (picker()) {
-  
+
       Дата бронирования: <em>{{picker()}}</em><br/>
-   
+
   }
 -->
 
 <div [class.hide]="isreg==0">
 
-<div class='hid' [class.vis]="status=='админ'"> 
+<div class='hid' [class.vis]="status=='админ'">
 
 
      <input type="radio" id="rab" name="tabtype" value="rm" [(ngModel)]="tablesForm.tabtype" />
@@ -50,12 +70,35 @@
              [cdkDragFreeDragPosition]="c.position"
              (cdkDragEnded)="dragEnded_new($event,i)"
 			 [cdkDragDisabled]="status=='админ' ? false : true"
-			 [ngClass]="c.name == getbooking(curr_name) ? 'example-box' : 'example-box-booked'"
-			 
+
+
+
+			[ngClass]="c.book=='1'  ? 'example-box-booked' : 'example-box'"
+
 			 >
-            {{c.name}}
-            <div class='hid' [class.vis]="status=='админ'"><a href="#" (click)="deltab(i)" style="text-decoration: none;">x</a></div>
-			<div  class='hid'[class.vis]="status=='сотрудник'" > <input type="button" value="Забронировать" (click)="book(c.name)"></div>
+		
+			 
+			
+            {{c.name}}<br/>
+			<font size=1><b>(Офис: {{c.office}})</b></font>
+            <div class='hid' [class.vis]="status=='админ'"><a href="#" (click)="deltab(i)" style="text-decoration: none; color: red;">x</a></div>
+			  <div  style="position: absolute;  top: 25px; left: 25px;" >
+			  
+			   <img src="monitor2.png" [class.hide]="c.mon==0">
+			   <img src="monitor2.png" [class.hide]="c.mon<2">
+			  </div>
+			<div  class='hid'[class.vis]="status=='сотрудник'" >
+
+
+			<input type="button" style="width: 170px;" [class.hide]="isbooked.includes(c.name) && this.useroffice==c.office" [disabled]="this.useroffice!=c.office" value="Забронировать" (click)="this.selectedTable = c.name; this.tableType=c.type">
+			
+			<input type="button" style="width: 170px;" [class.hide]="!isbooked.includes(c.name) || this.useroffice!=c.office"  value="Отменить бронирование" (click)="unbook(c.name)">
+
+
+			<!--
+			<input type="button" value="Забронировать" (click)="book(c.name)">
+			-->
+			</div>
 
         </div>
 </div>

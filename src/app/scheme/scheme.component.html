@@ -2,13 +2,16 @@
 
 
 
-<div [ngClass]="selectedTable == '' ? 'wind2' : 'wind2_vis'" id="wind2">Выберите дату бронирования:<br/><br/>
+<div [ngClass]="selectedTable == '' ? 'wind2' : 'wind2_vis'" id="wind2">Место: <b>{{this.selectedTable}}</b><br/><br/>Выберите дату бронирования:<br/><br/>
 
 
 
 	<label for="start">Дата:</label>
 
-<input type="date" id="start" name="trip-start"  (change)="checkDate(this.bookingForm.date)"  [(ngModel)]="bookingForm.date" />
+
+<input [class.hide]="this.tableType=='rm'" type="datetime-local" [(ngModel)]="bookingForm.datetime" >
+
+&nbsp;<input  [class.hide]="this.tableType=='pe'" type="date" id="start" name="trip-start"  (change)="checkDate(this.bookingForm.date)"  [(ngModel)]="bookingForm.date" />
 <br/><br/>
 <button type="button"  (click)="doBook()" >забронировать</button>&nbsp;&nbsp;
 <button type="button"  (click)="selectedTable=''">закрыть</button>
@@ -70,15 +73,27 @@
 
 
 
-			[ngClass]="!c.name  ? 'example-box' : 'example-box-booked'"
+			[ngClass]="c.book=='1'  ? 'example-box-booked' : 'example-box'"
 
 			 >
-            {{c.name}}
-            <div class='hid' [class.vis]="status=='админ'"><a href="#" (click)="deltab(i)" style="text-decoration: none;">x</a></div>
+		
+			 
+			
+            {{c.name}}<br/>
+			<font size=1><b>(Офис: {{c.office}})</b></font>
+            <div class='hid' [class.vis]="status=='админ'"><a href="#" (click)="deltab(i)" style="text-decoration: none; color: red;">x</a></div>
+			  <div  style="position: absolute;  top:  5px; left:  5px;" >
+			  
+			   <img src="monitor2.png" [class.hide]="c.mon==0">
+			   <img src="monitor2.png" [class.hide]="c.mon<2">
+			  </div>
 			<div  class='hid'[class.vis]="status=='сотрудник'" >
 
 
-			<input type="button" value="Забронировать" (click)="this.selectedTable = c.name">
+			<input type="button" style="width: 170px;" [class.hide]="isbooked.includes(c.name) && this.useroffice==c.office" [disabled]="this.useroffice!=c.office" value="Забронировать" (click)="this.selectedTable = c.name; this.tableType=c.type">
+			
+			<input type="button" style="width: 170px;" [class.hide]="!isbooked.includes(c.name) || this.useroffice!=c.office"  value="Отменить бронирование" (click)="unbook(c.name)">
+
 
 			<!--
 			<input type="button" value="Забронировать" (click)="book(c.name)">
