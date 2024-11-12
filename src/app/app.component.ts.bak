@@ -8,6 +8,10 @@ import { initializeApp } from "firebase/app";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
+
+
+// подключаемся к серверу авторизации
+
 const firebaseConfig = {
   apiKey: "AIzaSyBW0xmbj0ucOxaRwoQahHbXU81CNmersNQ",
   authDomain: "booking-46609.firebaseapp.com",
@@ -47,6 +51,7 @@ export class AppComponent implements OnInit {
 
 
 
+// получаем статус пользователя
 
     const auth = getAuth();
 
@@ -109,21 +114,10 @@ ngOnInit() {
 
 
 			(Object.keys(data)).forEach((key, index) => {
-
-				this.status=Object.values(data)[0];
-		
-			
-				this.status_get.push({
-					status: Object.values(data)[index]["status"]
-					});
+				this.status=Object.values(data)[0];			
+				
 				});
 				
-
-
-
-			//this.status=data.status;
-              
-			  console.log(this.status_get);
 
 			});
 

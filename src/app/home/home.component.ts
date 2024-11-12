@@ -1,7 +1,7 @@
 import { Component} from "@angular/core";
 import { HttpClient, HttpHeaders, HttpClientModule, HttpParams} from "@angular/common/http";
 import { CommonModule } from '@angular/common';
-
+import { environment } from '../../environments/environment';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from "@angular/router";
 import { getAuth,createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
@@ -20,7 +20,11 @@ import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } 
 
 export class HomeComponent {
 
- 
+
+private baseUrl = environment.baseUrl;
+
+
+ // поля формы регистрации
 
   loginForm:
   any = {
@@ -30,6 +34,8 @@ export class HomeComponent {
     password2: '',
     type: ''
   }
+
+// поля формы авторизации
 
   loginForma:
   any = {
@@ -49,6 +55,9 @@ export class HomeComponent {
 
 
     const auth = getAuth();
+
+
+// проверяем авторизован ли пользователь
 
     onAuthStateChanged(auth, (user) => {
 
@@ -96,7 +105,7 @@ export class HomeComponent {
 
 	
 	//const body = {json: tables_json};
-	this.http.post("https://rieltorov.net/tmp/office_api.php", reg_json).subscribe(  data => {
+	this.http.post(this.baseUrl, reg_json).subscribe(  data => {
 
 		console.log(data);
 		this.doauth=1;
@@ -105,19 +114,7 @@ export class HomeComponent {
 	
 
 
-/*
-      const db = getDatabase();
-      set(ref(db, 'users/' + uid), {
-        login: this.loginForm.login,
-        password: this.loginForm.password
-
-       })
-		 
-      .catch((error) => {
-        console.log(error);
-      });
-
-	  */
+ 
 
 
 

@@ -2,7 +2,7 @@ import { Component, inject, model, signal, importProvidersFrom} from "@angular/c
 
 import { HttpClient, HttpHeaders, HttpClientModule, HttpParams} from "@angular/common/http";
 import { CommonModule } from '@angular/common';
-
+import { environment } from '../../environments/environment';
 
 
 import {FormsModule} from '@angular/forms';
@@ -11,30 +11,6 @@ import { getAuth,createUserWithEmailAndPassword, signInWithEmailAndPassword, onA
 import { getDatabase, ref, set, update } from "firebase/database";
 import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
-import {MatSelectModule} from '@angular/material/select';
-import {MatButtonModule} from '@angular/material/button';
-import {
-  MAT_DIALOG_DATA,
-  MatDialog,
-  MatDialogActions,
-  MatDialogClose,
-  MatDialogContent,
-  MatDialogRef,
-  MatDialogTitle,
-} from '@angular/material/dialog';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-
-
-
-export interface DialogData {
-  chgroup: string;
-  choffice: string;
-  name: string;
-  type2: string;
-  arrayOffices: any;
-  arrayGroups: any;
-}
 
 @Component({
 
@@ -42,55 +18,20 @@ export interface DialogData {
     templateUrl: './workers.component.html',
     styleUrls: ['./workers.component.scss'],
     standalone: true,
-    imports: [FormsModule,HttpClientModule,CommonModule, MatFormFieldModule, MatInputModule,MatSelectModule, FormsModule, MatButtonModule],
+    imports: [FormsModule,HttpClientModule,CommonModule],
 })
 
 
 export class WokersComponent {
 
 
+	// url бэка
+
+    private baseUrl = environment.baseUrl;
+
+
 	selectedUser = 0;
 	selectedGroup = 0;
-
-
-
- choffice = signal('');
- chgroup = signal('');
-  name = model('');
-  type2 = '';
-  dialog = inject(MatDialog);
-  myArray = signal([{id: 1, name: 'Офис 1'}, {id:2, name: 'Офис 2'}]);
-  myArrayGr = signal([{id: 1, name: 'Группа 1'}, {id:2, name: 'Группа 2'}, {id:3, name: 'Группа 3'}]);
-
-
-  openDialog(type: string): void {
-
-	 this.type2=type;
-
-    const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
-      data: {name: this.name(), choffice: this.choffice(), chgroup: this.chgroup(),arrayOffices: this.myArray(),arrayGroups: this.myArrayGr(),type2: this.type2}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.log('The dialog was closed');
-      if (result !== undefined) {
-
-		  switch (this.type2)
-		  {
-		  case "group":
-			  this.chgroup.set("ok gr, " + result);
-		  break;
-
-		  default:
-			   this.choffice.set("ok of, " + result);
-
-
-		  }
-
-
-      }
-    });
-  }
 
 
   isreg = 0;
@@ -99,6 +40,9 @@ export class WokersComponent {
    offices: Array<{id: number; name: string;   } > = [];
 	 groups: Array<{id: number; name: string; office: string;} > = [];
 	 users: Array<{id: number; name: string; group: string; groupname: string; } > = [];
+
+
+// формы 
 
 officeForm:
   any = {
@@ -117,7 +61,9 @@ addgroupForm:
 	any = {
 	grof: 0,
 }
-	
+
+// формы конец
+ 	
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
 
@@ -160,14 +106,14 @@ addgroupForm:
   }
 
 
-
+// получаем список офисов с бэка
 
 officeslist()
 {
    let params = new HttpParams()
 			.set('type','offices');
 
-        this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+        this.http.get(this.baseUrl, {params}).subscribe(  data => {
 			(Object.keys(data)).forEach((key, index) => {
 				this.offices.push({
 					id: Object.values(data)[index]["id"],
@@ -177,12 +123,14 @@ officeslist()
 			});
 }
 
+// получаем список групп с бэка
+
 groupslist()
 	{
 	  let params = new HttpParams()
 			.set('type','groups');
 
-        this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+        this.http.get(this.baseUrl, {params}).subscribe(  data => {
 			(Object.keys(data)).forEach((key, index) => {
 				this.groups.push({
 					id: Object.values(data)[index]["id"],
@@ -193,12 +141,14 @@ groupslist()
 			});
 	}
 
+// получаем список пользователей с бэка
+
 userslist()
 	{
 		let params = new HttpParams()
 			.set('type','users');
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
 
 
 			(Object.keys(data)).forEach((key, index) => {
@@ -227,7 +177,7 @@ userslist()
 			.set('type','status')
 		    .set('user',user);
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
 
 
 			(Object.keys(data)).forEach((key, index) => {
@@ -242,6 +192,7 @@ userslist()
 
 	}
 
+// прикрипление группы к офису
 
 attGroup()
 	{
@@ -255,7 +206,7 @@ attGroup()
 	 {
 		   var addgroup_json = JSON.stringify({office: this.addgroupForm.ofid, add_group: this.selectedGroup});
 
-		   this.http.post("https://rieltorov.net/tmp/office_api.php", addgroup_json).subscribe(  data => {
+		   this.http.post(this.baseUrl, addgroup_json).subscribe(  data => {
 
 			   if (data!=null)
 			   {
@@ -285,7 +236,7 @@ attGroup()
 
 
 
-
+// прикрепление пользователей к группам
 
 addUser()
 {
@@ -296,7 +247,7 @@ addUser()
 	 {
 		   var adduser_json = JSON.stringify({group: this.adduserForm.grid, add_user: this.selectedUser});
 
-		   this.http.post("https://rieltorov.net/tmp/office_api.php", adduser_json).subscribe(  data => {
+		   this.http.post(this.baseUrl, adduser_json).subscribe(  data => {
 
 			   if (data!=null)
 			   {
@@ -317,7 +268,7 @@ addUser()
 }
 
 
-
+// создание офисов
 
 	addoffice()
 	{
@@ -328,7 +279,7 @@ addUser()
 
 
 	//const body = {json: tables_json};
-	this.http.post("https://rieltorov.net/tmp/office_api.php", off_json).subscribe(  data => {
+	this.http.post(this.baseUrl, off_json).subscribe(  data => {
 
 			(Object.keys(data)).forEach((key, index) => {
 
@@ -349,6 +300,8 @@ addUser()
 			}
 	}
 
+// создание групп
+
 	addgroup()
 	{
 		if (this.groupForm.grname!="")
@@ -357,7 +310,7 @@ addUser()
 		  var grp_json = JSON.stringify({group_name: this.groupForm.grname});
 
 
-	this.http.post("https://rieltorov.net/tmp/office_api.php", grp_json).subscribe(  data => {
+	this.http.post(this.baseUrl, grp_json).subscribe(  data => {
 
 			(Object.keys(data)).forEach((key, index) => {
 
@@ -396,7 +349,7 @@ addUser()
 			.set('type','delgroup')
 			.set('id',id);
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
 
 
 				(Object.keys(data)).forEach((key, index) => {
@@ -421,37 +374,3 @@ addUser()
 
 
 }
-
-
-@Component({
-  selector: 'dialog-overview-example-dialog',
-  templateUrl: './dialog-overview-example-dialog.html',
-  standalone: true,
-  imports: [
-    MatFormFieldModule,
-    MatInputModule,
-	MatSelectModule,
-    FormsModule,
-    MatButtonModule,
-    MatDialogTitle,
-    MatDialogContent,
-    MatDialogActions,
-    MatDialogClose,
-  ],
-})
-export class DialogOverviewExampleDialog {
-  readonly dialogRef = inject(MatDialogRef<DialogOverviewExampleDialog>);
-  readonly data = inject<DialogData>(MAT_DIALOG_DATA);
-  readonly choffice = model(this.data.choffice);
-  readonly chgroup = model(this.data.chgroup);
-  readonly type2 = this.data.type2;
-  readonly arrayOffices =  this.data.arrayOffices;
-  readonly arrayGroups =  this.data.arrayGroups;
-
-
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-}
-

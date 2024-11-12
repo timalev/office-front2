@@ -4,7 +4,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import { HttpClient, HttpHeaders, HttpClientModule, HttpParams} from "@angular/common/http";
 import { getAuth,createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { CommonModule } from '@angular/common';
-
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-workload',
@@ -15,6 +15,8 @@ import { CommonModule } from '@angular/common';
 })
 export class WorkloadComponent {
 
+	private baseUrl = environment.baseUrl;
+
 
 	 tables:   Array<{name: string; visibility: string; mon: number; type: string; position: {x: number, y: number}; office: string, book: string;} > = [];
 
@@ -22,7 +24,7 @@ export class WorkloadComponent {
 
 		offices: Array<{id: number; name: string;   } > = [];
 
-
+// форма выбора даты загруженности
 
 	  bookingForm:
 	  any = {
@@ -30,6 +32,8 @@ export class WorkloadComponent {
 	  datetime: '',
 	}
 
+
+// форма выбора офиса загруженности
 
 	  officeForm:
   any = {
@@ -72,14 +76,13 @@ export class WorkloadComponent {
 
 			this.isreg = 1;
 
+// получаем данные с бэка
+
             this.officeslist();
 			this.tableslist();
             this.getBooks();
 
-
-
      // this.checkDate(this.busy);
-
 
 		}
         else
@@ -89,14 +92,7 @@ export class WorkloadComponent {
         }
     });
 
-
-
-
   }
-
-
-
-
 
 
 
@@ -107,12 +103,6 @@ getOffice(event: any)
 
 	this.office = event.officeForm.office;
 	}
-
-
-
-
-
-
 
 
 	checkDate(date: string) {
@@ -208,26 +198,7 @@ console.log(this.loadreport);
 			.set('type','tables');
 
 		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
-
-
-
-
-
-
-
-const offc = Object.values(data).filter(newItem=>newItem.office===1);
-
-//console.log(offc);
-
-
-
-
-
-
-
-
-
-
+		
 
 
 			(Object.keys(data)).forEach((key, index) => {

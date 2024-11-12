@@ -64,7 +64,7 @@
      <input type="button" value="Создать" (click)="addtable()"><br/><br/>
 </div>
 
-
+<!-- рабочее место / переговорная -->
 
         <div cdkDrag  *ngFor="let c of tables; index as i"
              [cdkDragFreeDragPosition]="c.position"
@@ -81,7 +81,7 @@
 			
             {{c.name}}<br/>
 			<font size=1><b>(Офис: {{c.office}})</b></font>
-            <div class='hid' [class.vis]="status=='админ'"><a href="#" (click)="deltab(i)" style="text-decoration: none; color: red;">x</a></div>
+            <div class='hid' [class.vis]="status=='админ'"><a href="" (click)="$event.preventDefault(); deltab(i)" style="text-decoration: none; color: red;">x</a></div>
 			  <div  style="position: absolute;  top:  5px; left:  5px;" >
 			  
 			   <img src="monitor2.png" [class.hide]="c.mon==0">
@@ -101,6 +101,9 @@
 			</div>
 
         </div>
+
+<!-- рабочее место / переговорная -->
+
 </div>
 <div [class.hide]="isreg==1">
 <p>Для просмотра данного раздела необходимо <a href="/">авторизоваться</a></p>

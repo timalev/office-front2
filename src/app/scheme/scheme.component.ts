@@ -1,7 +1,7 @@
-import { Directive, Component, inject, model, signal, importProvidersFrom,OnInit} from "@angular/core";
+import { Directive, Component, inject, model, signal, importProvidersFrom } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpClientModule, HttpParams} from "@angular/common/http";
 import { CommonModule } from '@angular/common';
-
+import { environment } from '../../environments/environment';
 import {FormsModule} from '@angular/forms';
 import {ActivatedRoute, Router} from "@angular/router";
 import { getAuth,createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
@@ -9,6 +9,7 @@ import { getDatabase, ref, set, update } from "firebase/database";
 import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 import {CdkDragDrop, CdkDragEnd, CdkDrag, CdkDropList, moveItemInArray} from '@angular/cdk/drag-drop';
+
 
 
 
@@ -28,26 +29,32 @@ import {CdkDragDrop, CdkDragEnd, CdkDrag, CdkDropList, moveItemInArray} from '@a
 })
 
 
-export class SchemeComponent implements OnInit {
+export class SchemeComponent {
 
    offices: Array<{id: number; name: string; } > = [];
    tables:   Array<{name: string; visibility: string; mon: number; type: string; position: {x: number, y: number}; office: string, book: string;} > = [];
 
    books: Array<{id: number; name: string; date: string; user: string;} > = [];
 
+// url бэка
+
+    private baseUrl = environment.baseUrl;
+
+   
+
 	 //disablestatus: boolean = false;
 
    status = '';
-   disdrag: boolean = true;
 
-   selectedTable = '';
-   tableType = '';
+   selectedTable = ''; // текущее место (определяется из шаблона)
+   tableType = ''; // тип места переговорная / рабочее место (определяеся из шаблона)
 
-   useroffice = '';
-   user = '';
+   useroffice = ''; // офис к которому относиться пользователь
+   user = ''; // текущий пользователь
 
    isbooked: string[] = [];
 
+// форма бронирования
 
    bookingForm:
 	  any = {
@@ -57,7 +64,7 @@ export class SchemeComponent implements OnInit {
 
 
 
-
+// добавление места
 
  addtable() {
 
@@ -72,13 +79,15 @@ export class SchemeComponent implements OnInit {
           book: '',
 				});
 
+   // отправляем координаты в бэк
 
-    //console.log(this.tables);
+   this.updateTables();
+   
   }
 
 
 
-// создаем новое место
+// двигаем место
 
 dragEnded_new(event: CdkDragEnd<string[]>,i: number)
   {
@@ -90,6 +99,8 @@ dragEnded_new(event: CdkDragEnd<string[]>,i: number)
 
   }
 
+// корректировка позиции места
+
 newposition(x: number, x2: number, y: number, y2: number)
 {
     let new_x = x + x2;
@@ -100,7 +111,7 @@ newposition(x: number, x2: number, y: number, y2: number)
 }
 
 
-
+// форма добавления нового места
 
 
  tablesForm:
@@ -146,6 +157,8 @@ newposition(x: number, x2: number, y: number, y2: number)
 
 
 			this.isreg = 1;
+ 
+ // отправка / получение данных с бэка
 
       this.officeslist();
 			this.tableslist();
@@ -169,23 +182,9 @@ newposition(x: number, x2: number, y: number, y2: number)
 
   }
 
-/*
-dropDisable(): number {
-	return this.tables.filter(item => item.visibility === 'visible').length;
-}
 
-*/
-/*
-isbooked(name: string)
-	{
-	//this.books
-	  const newItem = this.books.find(newItem => newItem.name === name);
+// бронирование
 
-	 // console.log(newItem);
-
-	   return '';
-	}
-	*/
 doBook()
 {
 	
@@ -203,9 +202,7 @@ doBook()
 
 		   var book_json = JSON.stringify({book_name: this.selectedTable, book_date: date, book_time: time, user: this.user});
 
-		   this.http.post("https://rieltorov.net/tmp/office_api.php", book_json).subscribe(  data => {
-
-
+		   this.http.post(this.baseUrl, book_json).subscribe(  data => {
 
 
     this.isbooked.push(this.selectedTable);
@@ -236,24 +233,26 @@ doBook()
 
 }
 
+// обновление данных на бэке
 
 updateTables()
 {
 	var tables_json = JSON.stringify(this.tables);
 	const body = {json: tables_json};
-	this.http.post("https://rieltorov.net/tmp/office_api.php", body).subscribe(  data => {
+	this.http.post(this.baseUrl, body).subscribe(  data => {
 
 	});
 }
 
 
+// получение списка офисов
 
 officeslist()
 {
    let params = new HttpParams()
 			.set('type','offices');
 
-        this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+        this.http.get(this.baseUrl, {params}).subscribe(  data => {
 			(Object.keys(data)).forEach((key, index) => {
 				this.offices.push({
 					id: Object.values(data)[index]["id"],
@@ -270,10 +269,13 @@ deltab(i:number)
     this.tables.splice(i, 1);
 	var tables_json = JSON.stringify(this.tables);
 	const body = {json: tables_json};
-	this.http.post("https://rieltorov.net/tmp/office_api.php", body).subscribe(  data => {
+	this.http.post(this.baseUrl, body).subscribe(  data => {
 
 	});
 }
+
+
+// отмена бронирования
 
 unbook(table:string)
 {
@@ -281,7 +283,7 @@ unbook(table:string)
 	 var unbook_json = JSON.stringify({unbook: table});
 
 
-	this.http.post("https://rieltorov.net/tmp/office_api.php", unbook_json).subscribe(  data => {
+	this.http.post(this.baseUrl, unbook_json).subscribe(  data => {
 
 
     this.isbooked.splice(this.isbooked.indexOf(table), 1);
@@ -296,31 +298,18 @@ unbook(table:string)
 }
 
 
+// получение списка мест
+
 tableslist()
 	{
 		let params = new HttpParams()
 			.set('type','tables');
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
-
-
-
-
-
-
-
-const offc = Object.values(data).filter(newItem=>newItem.office===1);
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
+        
+		const offc = Object.values(data).filter(newItem=>newItem.office===1);
 
 //console.log(offc);
-
-
-
-
-
-
-
-
-
 
 
 
@@ -355,7 +344,7 @@ GetStatus(user: string)
 			.set('type','status')
 		    .set('user',user);
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
 
 	
 			(Object.keys(data)).forEach((key, index) => {
@@ -374,7 +363,7 @@ GetStatus(user: string)
 	}
 
 
-
+// проверяем, если дата забронирована, то блокируем бронирование
 
  checkDate(date: string) {
 
@@ -386,14 +375,10 @@ GetStatus(user: string)
   });
 
 
-
-
       let datec = date;
 
   
       let items = this.books.filter(item => item.date.indexOf(datec) !== -1);
-
-
 
 
  this.tables = this.tables.map(item => {
@@ -409,6 +394,7 @@ console.log(this.tables);
   }
 
 
+// отображает статус кнопки забронировать/отменить бронирование для авторизованного пользователя
 
 getBooks(): void {
 
@@ -417,7 +403,7 @@ getBooks(): void {
    let params = new HttpParams()
 			.set('type','getbooks');
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
 
 
 			//console.log(Object.values(data));
@@ -461,11 +447,7 @@ getBooks(): void {
 
 
 
-ngOnInit(): void {
-
-
-
-  }
+ 
 
 
   }

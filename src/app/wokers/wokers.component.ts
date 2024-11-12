@@ -2,7 +2,7 @@ import { Component, inject, model, signal, importProvidersFrom} from "@angular/c
 
 import { HttpClient, HttpHeaders, HttpClientModule, HttpParams} from "@angular/common/http";
 import { CommonModule } from '@angular/common';
-
+import { environment } from '../../environments/environment';
 
 
 import {FormsModule} from '@angular/forms';
@@ -25,13 +25,13 @@ import { getStorage, ref as ref_storage, uploadBytesResumable, getDownloadURL } 
 export class WokersComponent {
 
 
+	// url бэка
+
+    private baseUrl = environment.baseUrl;
+
+
 	selectedUser = 0;
 	selectedGroup = 0;
-
-
-
-
-
 
 
   isreg = 0;
@@ -40,6 +40,9 @@ export class WokersComponent {
    offices: Array<{id: number; name: string;   } > = [];
 	 groups: Array<{id: number; name: string; office: string;} > = [];
 	 users: Array<{id: number; name: string; group: string; groupname: string; } > = [];
+
+
+// формы 
 
 officeForm:
   any = {
@@ -58,7 +61,9 @@ addgroupForm:
 	any = {
 	grof: 0,
 }
-	
+
+// формы конец
+ 	
 
   constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
 
@@ -101,14 +106,14 @@ addgroupForm:
   }
 
 
-
+// получаем список офисов с бэка
 
 officeslist()
 {
    let params = new HttpParams()
 			.set('type','offices');
 
-        this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+        this.http.get(this.baseUrl, {params}).subscribe(  data => {
 			(Object.keys(data)).forEach((key, index) => {
 				this.offices.push({
 					id: Object.values(data)[index]["id"],
@@ -118,12 +123,14 @@ officeslist()
 			});
 }
 
+// получаем список групп с бэка
+
 groupslist()
 	{
 	  let params = new HttpParams()
 			.set('type','groups');
 
-        this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+        this.http.get(this.baseUrl, {params}).subscribe(  data => {
 			(Object.keys(data)).forEach((key, index) => {
 				this.groups.push({
 					id: Object.values(data)[index]["id"],
@@ -134,12 +141,14 @@ groupslist()
 			});
 	}
 
+// получаем список пользователей с бэка
+
 userslist()
 	{
 		let params = new HttpParams()
 			.set('type','users');
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
 
 
 			(Object.keys(data)).forEach((key, index) => {
@@ -157,7 +166,7 @@ userslist()
 
 	}
 
-
+// получаем статус
 
 	GetStatus(user: string)
 	{
@@ -168,7 +177,7 @@ userslist()
 			.set('type','status')
 		    .set('user',user);
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
 
 
 			(Object.keys(data)).forEach((key, index) => {
@@ -183,6 +192,7 @@ userslist()
 
 	}
 
+// прикрипление группы к офису
 
 attGroup()
 	{
@@ -196,7 +206,7 @@ attGroup()
 	 {
 		   var addgroup_json = JSON.stringify({office: this.addgroupForm.ofid, add_group: this.selectedGroup});
 
-		   this.http.post("https://rieltorov.net/tmp/office_api.php", addgroup_json).subscribe(  data => {
+		   this.http.post(this.baseUrl, addgroup_json).subscribe(  data => {
 
 			   if (data!=null)
 			   {
@@ -226,7 +236,7 @@ attGroup()
 
 
 
-
+// прикрепление пользователей к группам
 
 addUser()
 {
@@ -237,7 +247,7 @@ addUser()
 	 {
 		   var adduser_json = JSON.stringify({group: this.adduserForm.grid, add_user: this.selectedUser});
 
-		   this.http.post("https://rieltorov.net/tmp/office_api.php", adduser_json).subscribe(  data => {
+		   this.http.post(this.baseUrl, adduser_json).subscribe(  data => {
 
 			   if (data!=null)
 			   {
@@ -258,7 +268,7 @@ addUser()
 }
 
 
-
+// создание офисов
 
 	addoffice()
 	{
@@ -269,7 +279,7 @@ addUser()
 
 
 	//const body = {json: tables_json};
-	this.http.post("https://rieltorov.net/tmp/office_api.php", off_json).subscribe(  data => {
+	this.http.post(this.baseUrl, off_json).subscribe(  data => {
 
 			(Object.keys(data)).forEach((key, index) => {
 
@@ -290,6 +300,8 @@ addUser()
 			}
 	}
 
+// создание групп
+
 	addgroup()
 	{
 		if (this.groupForm.grname!="")
@@ -298,7 +310,7 @@ addUser()
 		  var grp_json = JSON.stringify({group_name: this.groupForm.grname});
 
 
-	this.http.post("https://rieltorov.net/tmp/office_api.php", grp_json).subscribe(  data => {
+	this.http.post(this.baseUrl, grp_json).subscribe(  data => {
 
 			(Object.keys(data)).forEach((key, index) => {
 
@@ -337,7 +349,7 @@ addUser()
 			.set('type','delgroup')
 			.set('id',id);
 
-		this.http.get('https://rieltorov.net/tmp/office_api.php', {params}).subscribe(  data => {
+		this.http.get(this.baseUrl, {params}).subscribe(  data => {
 
 
 				(Object.keys(data)).forEach((key, index) => {
